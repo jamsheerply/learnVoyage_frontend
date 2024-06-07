@@ -29,7 +29,6 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
 
   const confirmBlockUnblock = () => {
     if (selectedUser) {
-<<<<<<< HEAD
       // Add your block/unblock logic here
       console.log(
         `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
@@ -37,23 +36,6 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
         selectedUser.isBlocked
       );
 
-=======
-      dispatch(
-        editInstructor({
-          id: selectedUser.id,
-          isBlocked: !selectedUser.isBlocked,
-        })
-      )
-        .then(() => {
-          console.log(
-            `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-            selectedUser.id
-          );
-        })
-        .catch((error) => {
-          console.error("Failed to update user status", error);
-        });
->>>>>>> dev
       // Close the modal after confirming
       setShowModal(false);
     }
@@ -85,19 +67,11 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
               </td>
               <td className="px-6 py-4 text-sm whitespace-nowrap">
                 {tableData.isBlocked ? (
-<<<<<<< HEAD
-                  <span className="bg-red-500 p-3 rounded-lg font-bold w-24">
+                  <span className="text-red-500 p-3 rounded-lg font-bold w-24">
                     Blocked
                   </span>
                 ) : (
-                  <span className="bg-green-500 p-3 rounded-lg font-bold w-24">
-=======
-                  <span className="text-red-500 p-3 rounded-lg font-bold">
-                    Blocked
-                  </span>
-                ) : (
-                  <span className="text-green-500 p-3 rounded-lg font-bold">
->>>>>>> dev
+                  <span className="text-green-500 p-3 rounded-lg font-bold w-24">
                     Active
                   </span>
                 )}
