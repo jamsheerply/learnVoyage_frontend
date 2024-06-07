@@ -20,6 +20,7 @@ import AdminAuth from "./components/Hoc/AdminAuth";
 import Tech from "./pages/Tech";
 import InstructorSignup from "./pages/InstructorSignup";
 import InstructorList from "./pages/InstructorList";
+import Categories from "./pages/Categories";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -71,6 +72,7 @@ const router = createBrowserRouter(
         }
       >
         <Route path="overview" />
+        <Route path="categories" />
         <Route path="profile" element={<Profile />} />
         <Route path="instructors" element={<InstructorList />} />
       </Route>

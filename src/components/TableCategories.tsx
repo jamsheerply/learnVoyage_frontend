@@ -17,7 +17,7 @@ interface TableProps {
   TableData?: TableData[];
 }
 
-const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
+const TableCategories: React.FC<TableProps> = ({ TableHead, TableData }) => {
   const dispatch: AppDispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<TableData | null>(null);
@@ -29,15 +29,6 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
 
   const confirmBlockUnblock = () => {
     if (selectedUser) {
-<<<<<<< HEAD
-      // Add your block/unblock logic here
-      console.log(
-        `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-        selectedUser.id,
-        selectedUser.isBlocked
-      );
-
-=======
       dispatch(
         editInstructor({
           id: selectedUser.id,
@@ -53,7 +44,6 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
         .catch((error) => {
           console.error("Failed to update user status", error);
         });
->>>>>>> dev
       // Close the modal after confirming
       setShowModal(false);
     }
@@ -85,19 +75,11 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
               </td>
               <td className="px-6 py-4 text-sm whitespace-nowrap">
                 {tableData.isBlocked ? (
-<<<<<<< HEAD
-                  <span className="bg-red-500 p-3 rounded-lg font-bold w-24">
-                    Blocked
-                  </span>
-                ) : (
-                  <span className="bg-green-500 p-3 rounded-lg font-bold w-24">
-=======
                   <span className="text-red-500 p-3 rounded-lg font-bold">
                     Blocked
                   </span>
                 ) : (
                   <span className="text-green-500 p-3 rounded-lg font-bold">
->>>>>>> dev
                     Active
                   </span>
                 )}
@@ -154,4 +136,4 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
   );
 };
 
-export default Table;
+export default TableCategories;
