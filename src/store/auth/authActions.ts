@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUserApi, registerUserApi, verifyUserApi } from "../api/api";
+import { loginUserApi, registerUserApi, verifyUserApi } from "../api/AuthApi";
 import { LOGIN_USER, REGISTER_USER, VERIFY_USER } from "./types";
 
 interface UserData {

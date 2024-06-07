@@ -1,85 +1,99 @@
 import {
   Bell,
-  BookOpen,
   BookText,
   Home,
+  LogOut,
   MessageCircleMore,
   NotebookPen,
   Settings,
+  ShoppingBag,
 } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../store/auth/authSlice";
 
 const AdminLayout = () => {
+  const dispatch = useDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
-  const handleInstructors = () => {
-    navigate("/admin/instructors", { replace: true });
+
+  const pathArray = location.pathname.split("/").filter((part) => part !== "");
+  const lastValue = pathArray.pop();
+
+  const handleNavigation = (path: string) => {
+    navigate(path, { replace: true });
   };
-  const handleOverview = () => {
-    navigate("/admin/overview", { replace: true });
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/", { replace: true });
   };
+
+  const navItems = [
+    { name: "Overview", path: "/admin/overview", icon: Home },
+    { name: "Categories", path: "/admin/categories", icon: ShoppingBag },
+    { name: "Course", path: "/admin/course", icon: BookText },
+    { name: "Instructors", path: "/admin/instructors", icon: NotebookPen },
+    { name: "Messages", path: "/admin/messages", icon: MessageCircleMore },
+    { name: "Settings", path: "/admin/settings", icon: Settings },
+  ];
+
   return (
-    <>
-      <div className="flex h-[687px]">
-        <div className="bg-green-100 w-[250px] flex flex-col">
-          <div className="p-4">
-            <div className="text-green-600 text-4xl font-semibold text-center my-6">
-              Admin
+    <div className="flex h-[690px]">
+      <aside className="bg-green-100 w-[250px] flex flex-col">
+        <div className="p-4">
+          <div className="text-green-600 text-4xl font-semibold text-center my-6">
+            Admin
+          </div>
+        </div>
+        <nav className="flex flex-col items-center">
+          {navItems.map((item) => (
+            <button
+              key={item.name}
+              className={`px-5 mt-6 py-2 ${
+                lastValue === item.name.toLowerCase()
+                  ? "bg-green-500"
+                  : "bg-white"
+              } text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 items-center px-8 cursor-pointer`}
+              onClick={() => item.path && handleNavigation(item.path)}
+            >
+              <item.icon />
+              {item.name}
+            </button>
+          ))}
+          <button
+            className="px-8 mt-6 py-2 bg-white text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 items-center  cursor-pointer"
+            onClick={handleLogout}
+          >
+            <LogOut />
+            Logout
+          </button>
+        </nav>
+      </aside>
+      <main className="flex-1">
+        <header className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[100px]">
+          <div className="text-base font-semibold flex gap-2 items-center">
+            <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">
+              <img
+                src={profileImg}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <div>Jamsheer</div>
+              <div>UI & UX Designer</div>
             </div>
           </div>
-          <nav className="flex flex-col items-center justify-center ">
-            <p
-              className=" px-5 mt-[70px] py-2 text-gray-600 bg-green-600 rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer"
-              onClick={handleOverview}
-            >
-              <Home />
-              Overview
-            </p>
-            <p className=" px-5 mt-[25px] py-2 bg-white text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer">
-              <BookOpen />
-              Enrollments
-            </p>
-            <p className=" px-5 mt-[25px] py-2 bg-white text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer">
-              <BookText />
-              Exams
-            </p>
-            <p
-              className=" px-5 mt-[25px] py-2 bg-white text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer"
-              onClick={handleInstructors}
-            >
-              <NotebookPen />
-              Instructors
-            </p>
-            <p className=" px-5 mt-[25px] py-2 bg-white text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer">
-              <MessageCircleMore />
-              Messages
-            </p>
-            <p className=" px-5 mt-[25px] py-2 bg-white text-gray-500  rounded-lg w-[175px] h-[45px] flex gap-1 cursor-pointer">
-              <Settings />
-              Settings
-            </p>
-          </nav>
-        </div>
-        <div className="flex-1">
-          <nav className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[100px]">
-            <div className="text-base font-semibold  h-full flex gap-2 items-center">
-              <div className=" flex items-center justify-center bg-green-200 rounded-lg ">
-                <img src={profileImg} className="w-12 h-full  " />
-              </div>
-              <div>
-                <div>jamsheer</div>
-                <div>ui & ux designer</div>
-              </div>
-            </div>
-            <div className="lucideBell bg-green-100 flex items-center p-4 rounded-md ">
-              <Bell />
-            </div>
-          </nav>
-          <hr className="h-px my-2 bg-gray-400 border-0" />
-          <Outlet />
-        </div>
-      </div>
-    </>
+          <div className="bg-green-100 flex items-center p-4 rounded-md">
+            <Bell />
+          </div>
+        </header>
+        <hr className="h-px my-2 bg-gray-400 border-0" />
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

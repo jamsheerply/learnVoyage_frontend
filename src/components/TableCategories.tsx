@@ -17,7 +17,7 @@ interface TableProps {
   TableData?: TableData[];
 }
 
-const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
+const TableCategories: React.FC<TableProps> = ({ TableHead, TableData }) => {
   const dispatch: AppDispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<TableData | null>(null);
@@ -136,4 +136,4 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
   );
 };
 
-export default Table;
+export default TableCategories;
