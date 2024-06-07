@@ -27,24 +27,10 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
     setShowModal(true);
   };
 
-  const confirmBlockUnblock = () => {
+  const confirmBlockUnblock = async () => {
     if (selectedUser) {
-      dispatch(
-        editInstructor({
-          id: selectedUser.id,
-          isBlocked: !selectedUser.isBlocked,
-        })
-      )
-        .then(() => {
-          console.log(
-            `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-            selectedUser.id
-          );
-        })
-        .catch((error) => {
-          console.error("Failed to update user status", error);
-        });
-      // Close the modal after confirming
+      const { id, isBlocked } = selectedUser;
+      await dispatch(editInstructor({ id, isBlocked: !isBlocked }));
       setShowModal(false);
     }
   };
@@ -75,11 +61,11 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
               </td>
               <td className="px-6 py-4 text-sm whitespace-nowrap">
                 {tableData.isBlocked ? (
-                  <span className="text-red-500 p-3 rounded-lg font-bold">
+                  <span className="text-red-500 p-3 rounded-lg font-bold w-24">
                     Blocked
                   </span>
                 ) : (
-                  <span className="text-green-500 p-3 rounded-lg font-bold">
+                  <span className="text-green-500 p-3 rounded-lg font-bold w-24">
                     Active
                   </span>
                 )}
