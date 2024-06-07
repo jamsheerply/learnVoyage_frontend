@@ -27,16 +27,10 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
     setShowModal(true);
   };
 
-  const confirmBlockUnblock = () => {
+  const confirmBlockUnblock = async () => {
     if (selectedUser) {
-      // Add your block/unblock logic here
-      console.log(
-        `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-        selectedUser.id,
-        selectedUser.isBlocked
-      );
-
-      // Close the modal after confirming
+      const { id, isBlocked } = selectedUser;
+      await dispatch(editInstructor({ id, isBlocked: !isBlocked }));
       setShowModal(false);
     }
   };
