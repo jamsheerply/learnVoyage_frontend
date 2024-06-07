@@ -28,7 +28,8 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
       // Add your block/unblock logic here
       console.log(
         `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-        selectedUser
+        selectedUser.id,
+        selectedUser.isBlocked
       );
 
       // Close the modal after confirming
@@ -62,9 +63,11 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
               </td>
               <td className="px-6 py-4 text-sm whitespace-nowrap">
                 {tableData.isBlocked ? (
-                  <span>Blocked</span>
+                  <span className="bg-red-500 p-3 rounded-lg font-bold w-24">
+                    Blocked
+                  </span>
                 ) : (
-                  <span className="bg-green-500 p-3 rounded-lg font-bold">
+                  <span className="bg-green-500 p-3 rounded-lg font-bold w-24">
                     Active
                   </span>
                 )}
@@ -72,14 +75,14 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
               <td className="px-6 py-4 text-sm whitespace-nowrap">
                 {tableData.isBlocked ? (
                   <button
-                    className="bg-green-500 p-3 rounded-lg font-bold"
+                    className="bg-green-500 p-3 rounded-lg font-bold w-24"
                     onClick={() => handleBlockUnblock(tableData)}
                   >
                     Unblock
                   </button>
                 ) : (
                   <button
-                    className="bg-red-500 p-3 rounded-lg font-bold"
+                    className="bg-red-500 p-3 rounded-lg font-bold w-24"
                     onClick={() => handleBlockUnblock(tableData)}
                   >
                     Block
