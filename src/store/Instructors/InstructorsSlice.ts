@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAllInstructorsList, editInstructor } from "./InstructorsActions";
+import toast from "react-hot-toast";
 
 interface Instructor {
   firstName: string;
@@ -43,6 +44,7 @@ const instructorsSlice = createSlice({
         (state, action: PayloadAction<any>) => {
           state.loading = false;
           state.error = action.payload;
+          toast.error("This is an error!");
         }
       )
       .addCase(editInstructor.pending, (state) => {

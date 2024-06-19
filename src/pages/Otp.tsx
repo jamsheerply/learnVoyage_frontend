@@ -2,14 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import ButtonForm from "../components/ButtonForm";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
-import { verifyOtp } from "../store/auth/authActions";
+import { resendOtp, verifyOtp } from "../store/auth/authActions";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { RotateCcw } from "lucide-react";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Otp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const auth = useSelector((state: any) => state.auth);
 
+  // User object with initial values for OTP and userId from the Redux state
   interface User {
     [key: string]: string | number;
     otp: string;
@@ -22,8 +26,11 @@ const Otp = () => {
 
   const [errors, setErrors] = useState("");
 
+  // Effect to handle navigation and displaying error messages
   useEffect(() => {
-    console.log(JSON.stringify(auth.isVerified));
+    if (auth.loginError) {
+      toast.error(auth.loginError.error);
+    }
     if (auth.userId && auth.isVerified) {
       if (auth.role === "student") {
         navigate("/student/overview");
@@ -35,17 +42,42 @@ const Otp = () => {
     } else if (!auth.userId) {
       navigate("/student-auth/signin");
     }
-  }, [auth.userId, auth.isVerified, auth.role, navigate]);
+  }, [auth.userId, auth.isVerified, auth.role, navigate, auth.loginError]);
 
-  const schema = Yup.lazy(() =>
-    Yup.object().shape({
-      otp: Yup.string()
-        .required("otp is required")
-        .min(6, "otp must be at least 6 characters")
-        .max(6, "otp must be less than 6 characters"),
-    })
-  );
+  // Validation schema for OTP using Yup
+  const schema = Yup.object().shape({
+    otp: Yup.string()
+      .required("OTP is required")
+      .min(6, "OTP must be at least 6 characters")
+      .max(6, "OTP must be less than 6 characters"),
+  });
 
+  const [time, setTime] = useState(120);
+
+  // Timer effect to count down from 120 seconds to 0
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime((prevTime) => {
+        if (prevTime > 0) {
+          return prevTime - 1;
+        } else {
+          clearInterval(interval);
+          return prevTime;
+        }
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const handleResendOtp = () => {
+    dispatch(resendOtp({ email: auth.email, userId: auth.userId }) as any);
+    setTime(120); // Reset the timer after resending OTP
+  };
+
+  // Function to handle OTP verification
   const handleVerifyOtp = async () => {
     try {
       await schema.validate(user, { abortEarly: false });
@@ -66,7 +98,7 @@ const Otp = () => {
               <input
                 type="text"
                 className="bg-gray-200 p-[10px] w-[350px] rounded-md px-4"
-                placeholder="Enter otp"
+                placeholder="Enter OTP"
                 value={user.otp}
                 onChange={(e) => setUser({ ...user, otp: e.target.value })}
               />
@@ -74,6 +106,18 @@ const Otp = () => {
             <div className="sm:px-[195px] lg:px-[425px] text-red-500">
               {errors && <p>{errors}</p>}
             </div>
+          </div>
+          <div className="flex gap-44 justify-center mb-5">
+            <div>Remaining time: {time}</div>
+            {time === 0 ? (
+              <RotateCcw
+                color="green"
+                className="cursor-pointer"
+                onClick={handleResendOtp}
+              />
+            ) : (
+              <ClipLoader color="#22c55e" />
+            )}
           </div>
           <ButtonForm
             nameButton="Sign Up"

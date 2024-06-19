@@ -1,6 +1,18 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUserApi, registerUserApi, verifyUserApi } from "../api/AuthApi";
-import { LOGIN_USER, REGISTER_USER, VERIFY_USER } from "./types";
+import {
+  isBlockedApi,
+  loginUserApi,
+  registerUserApi,
+  resentOTpApi,
+  verifyUserApi,
+} from "../api/AuthApi";
+import {
+  IS_BLOCKED,
+  LOGIN_USER,
+  REGISTER_USER,
+  RESEND_OTP,
+  VERIFY_USER,
+} from "./types";
 
 interface UserData {
   [key: string]: string | number;
@@ -41,6 +53,22 @@ export const loginUser = createAsyncThunk<
     return rejectWithValue(err.response.data);
   }
 });
+
+export const resendOtp = createAsyncThunk<
+  string,
+  UserData,
+  AsyncThunkConfig<any>
+>(RESEND_OTP, async (values, { rejectWithValue }) => {
+  try {
+    const response = await resentOTpApi(values);
+    const data = response.data.data;
+    return data;
+  } catch (err: any) {
+    console.log(err.response.data);
+    return rejectWithValue(err.respose.data);
+  }
+});
+
 export const verifyOtp = createAsyncThunk<
   string,
   UserData,
@@ -51,6 +79,22 @@ export const verifyOtp = createAsyncThunk<
     const token = response.data.data;
     localStorage.setItem("token", token);
     return token;
+  } catch (err: any) {
+    console.log(err.response.data);
+    return rejectWithValue(err.response.data);
+  }
+});
+
+export const isBlocked = createAsyncThunk<
+  boolean,
+  string,
+  AsyncThunkConfig<any>
+>(IS_BLOCKED, async (id, { rejectWithValue }) => {
+  try {
+    const response = await isBlockedApi(id);
+    const isBlocked = response.data.data;
+    console.log(isBlocked);
+    return isBlocked;
   } catch (err: any) {
     console.log(err.response.data);
     return rejectWithValue(err.response.data);

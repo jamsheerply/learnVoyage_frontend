@@ -2,7 +2,6 @@ import { Bell, Grip } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import { Logo } from "../components/Logo";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import { logoutUser } from "../store/auth/authSlice";
 
 const NavLayout = () => {
@@ -47,7 +46,6 @@ const NavLayout = () => {
               <span
                 onClick={() => {
                   dispatch(logoutUser());
-                  toast.warning("Logged out!", { position: "bottom-left" });
                 }}
               >
                 Logout

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { loginUser, registerUser, verifyOtp } from "./authActions";
+import toast from "react-hot-toast";
 
 interface UserData {
   id: string;
@@ -109,11 +110,14 @@ const authSlice = createSlice({
           state.role = user.role;
           state.isVerified = user.isVerified;
           state.loginStatus = "success";
+          state.registerError = "";
+          toast.success("login sucessfully");
         }
       })
       .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
         state.loginStatus = "rejected";
         state.loginError = action.payload;
+        toast.error(action.payload.error);
       })
       .addCase(verifyOtp.pending, (state) => {
         state.loginStatus = "pending";
