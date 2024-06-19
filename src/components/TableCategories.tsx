@@ -1,54 +1,21 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
-import { editInstructor } from "../store/Instructors/InstructorsActions";
+import { PenTool } from "lucide-react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-interface TableData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  isBlocked: boolean;
+interface Category {
   id: string;
+  categoryName: string;
+  isBlocked: boolean;
+  image: string;
 }
 
 interface TableProps {
   TableHead: string[];
-  TableData?: TableData[];
+  TableData: Category[];
 }
 
 const TableCategories: React.FC<TableProps> = ({ TableHead, TableData }) => {
-  const dispatch: AppDispatch = useDispatch();
-  const [showModal, setShowModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<TableData | null>(null);
-
-  const handleBlockUnblock = (user: TableData) => {
-    setSelectedUser(user);
-    setShowModal(true);
-  };
-
-  const confirmBlockUnblock = () => {
-    if (selectedUser) {
-      dispatch(
-        editInstructor({
-          id: selectedUser.id,
-          isBlocked: !selectedUser.isBlocked,
-        })
-      )
-        .then(() => {
-          console.log(
-            `${selectedUser.isBlocked ? "Unblocking" : "Blocking"} user:`,
-            selectedUser.id
-          );
-        })
-        .catch((error) => {
-          console.error("Failed to update user status", error);
-        });
-      // Close the modal after confirming
-      setShowModal(false);
-    }
-  };
-
+  const navigate = useNavigate();
   return (
     <div>
       <table className="min-w-full border divide-y divide-gray-200">
@@ -65,73 +32,36 @@ const TableCategories: React.FC<TableProps> = ({ TableHead, TableData }) => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {TableData?.map((tableData) => (
-            <tr key={tableData.id}>
-              <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                {tableData.firstName} {tableData.lastName}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                {tableData.email}
-              </td>
-              <td className="px-6 py-4 text-sm whitespace-nowrap">
-                {tableData.isBlocked ? (
-                  <span className="text-red-500 p-3 rounded-lg font-bold">
-                    Blocked
-                  </span>
-                ) : (
-                  <span className="text-green-500 p-3 rounded-lg font-bold">
-                    Active
-                  </span>
-                )}
-              </td>
-              <td className="px-6 py-4 text-sm whitespace-nowrap">
-                {tableData.isBlocked ? (
+          {TableData &&
+            TableData.map((category) => (
+              <tr key={category.id}>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  {category.categoryName}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  {category.isBlocked ? "Blocked" : "Active"}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  <img
+                    src={category.image}
+                    alt={category.categoryName}
+                    className="w-10 h-10"
+                  />
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                   <button
-                    className="bg-green-500 p-3 rounded-lg font-bold w-24"
-                    onClick={() => handleBlockUnblock(tableData)}
+                    className="bg-green-500 text-white p-2 rounded"
+                    onClick={() => {
+                      navigate(`/admin/edit-category/${category.id}`);
+                    }}
                   >
-                    Unblock
+                    <PenTool />
                   </button>
-                ) : (
-                  <button
-                    className="bg-red-500 p-3 rounded-lg font-bold w-24"
-                    onClick={() => handleBlockUnblock(tableData)}
-                  >
-                    Block
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
-      {showModal && (
-        <Modal
-          shouldShow={showModal}
-          onRequestClose={() => setShowModal(false)}
-        >
-          <div className="p-4">
-            <h2 className="text-xl mb-4">
-              Are you sure you want to{" "}
-              {selectedUser?.isBlocked ? "unblock" : "block"} this user?
-            </h2>
-            <div className="flex justify-end">
-              <button
-                className="bg-red-500 p-2 rounded-lg m-2"
-                onClick={confirmBlockUnblock}
-              >
-                Yes
-              </button>
-              <button
-                className="bg-gray-500 p-2 rounded-lg m-2"
-                onClick={() => setShowModal(false)}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 };

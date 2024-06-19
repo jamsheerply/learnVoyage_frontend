@@ -6,13 +6,13 @@ import InputForm from "../components/InputForm";
 import ButtonForm from "../components/ButtonForm";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/auth/authActions";
+import toast from "react-hot-toast";
 
 interface User {
   email: string;
   password: string;
   [key: string]: string;
 }
-
 const Signin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,7 +24,6 @@ const Signin = () => {
   });
 
   useEffect(() => {
-    console.log(JSON.stringify(auth.isVerified));
     if (auth.userId && !auth.isVerified) {
       navigate("/student-auth/otp");
     } else if (auth.userId && auth.isVerified) {

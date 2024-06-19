@@ -1,6 +1,5 @@
 import {
   Bell,
-  BookText,
   Home,
   LogOut,
   MessageCircleMore,
@@ -33,10 +32,9 @@ const AdminLayout = () => {
   const navItems = [
     { name: "Overview", path: "/admin/overview", icon: Home },
     { name: "Categories", path: "/admin/categories", icon: ShoppingBag },
-    { name: "Course", path: "/admin/course", icon: BookText },
     { name: "Instructors", path: "/admin/instructors", icon: NotebookPen },
-    { name: "Messages", path: "/admin/messages", icon: MessageCircleMore },
-    { name: "Settings", path: "/admin/settings", icon: Settings },
+    // { name: "Messages", path: "/admin/messages", icon: MessageCircleMore },
+    // { name: "Settings", path: "/admin/settings", icon: Settings },
   ];
 
   return (
@@ -53,9 +51,9 @@ const AdminLayout = () => {
               key={item.name}
               className={`px-5 mt-6 py-2 ${
                 lastValue === item.name.toLowerCase()
-                  ? "bg-green-500"
-                  : "bg-white"
-              } text-gray-500 rounded-lg w-[175px] h-[45px] flex gap-1 items-center px-8 cursor-pointer`}
+                  ? "bg-green-500 text-white"
+                  : "bg-white text-gray-500"
+              } rounded-lg w-[175px] h-[45px] flex gap-1 items-center px-8 cursor-pointer`}
               onClick={() => item.path && handleNavigation(item.path)}
             >
               <item.icon />

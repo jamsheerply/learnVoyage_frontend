@@ -3,7 +3,6 @@ import axios, { AxiosInstance } from "axios";
 interface UserData {
   [key: string]: string | number;
 }
-
 const baseURL = "http://localhost:3000/api";
 
 export const api: AxiosInstance = axios.create({
@@ -31,7 +30,13 @@ export const registerUserApi = (userData: UserData) => {
 export const loginUserApi = (userData: UserData) => {
   return api.post("/users/signin", userData);
 };
-
+export const resentOTpApi = (userData: UserData) => {
+  return api.post("users/resend-otp", userData);
+};
 export const verifyUserApi = (userData: UserData) => {
   return api.post("/users/verify-otp", userData);
+};
+
+export const isBlockedApi = (id: string) => {
+  return api.get(`/users/isBlocked/${id}`);
 };

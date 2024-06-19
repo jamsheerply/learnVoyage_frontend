@@ -7,6 +7,7 @@ import signupImage from "../assets/signupInstructorPage.png";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../store/auth/authActions";
+import toast from "react-hot-toast";
 
 interface User {
   firstName: string;
@@ -34,7 +35,9 @@ const InstructorSignup: React.FC = () => {
   const [errors, setErrors] = useState<Partial<User>>({});
 
   useEffect(() => {
-    console.log(JSON.stringify(auth.isVerified));
+    if (auth.registerError) {
+      toast.error(auth.registerError.error);
+    }
     if (auth.userId && !auth.isVerified) {
       navigate("/student-auth/otp");
     } else if (auth.userId && auth.isVerified) {
@@ -46,7 +49,7 @@ const InstructorSignup: React.FC = () => {
         navigate("/admin/overview");
       }
     }
-  }, [auth.userId, auth.isVerified, auth.role, navigate]);
+  }, [auth.userId, auth.isVerified, auth.role, navigate, auth.registerError]);
 
   const schema = Yup.lazy(() =>
     Yup.object().shape({
