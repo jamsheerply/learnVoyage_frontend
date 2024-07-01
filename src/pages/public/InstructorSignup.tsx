@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 // import googleIcon from "../assets/image/icons8-google-24.png";
 import { Link, useNavigate } from "react-router-dom";
-import InputForm from "../components/InputForm";
-import ButtonForm from "../components/ButtonForm";
-import signupImage from "../assets/signupInstructorPage.png";
+import InputForm from "../../components/InputForm";
+import ButtonForm from "../../components/ButtonForm";
+import signupImage from "../../assets/signupInstructorPage.png";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../store/auth/authActions";
+import { registerUser } from "../../store/auth/authActions";
 import toast from "react-hot-toast";
 
 interface User {

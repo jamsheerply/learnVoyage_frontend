@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
-import { loginUser, registerUser, verifyOtp } from "./authActions";
+import { loginUser, logoutUser, registerUser, verifyOtp } from "./authActions";
 import toast from "react-hot-toast";
 
 interface UserData {
@@ -9,6 +9,7 @@ interface UserData {
   email: string;
   role: string;
   isVerified: boolean;
+  firstName: string;
 }
 
 interface AuthState {
@@ -23,6 +24,7 @@ interface AuthState {
   loginStatus: "pending" | "success" | "rejected" | "";
   loginError: any;
   userLoaded: boolean;
+  firstName: string;
 }
 
 const initialState: AuthState = {
@@ -37,6 +39,7 @@ const initialState: AuthState = {
   loginStatus: "",
   loginError: "",
   userLoaded: false,
+  firstName: "",
 };
 
 const authSlice = createSlice({
@@ -47,7 +50,7 @@ const authSlice = createSlice({
       const token = state.token;
       if (token) {
         const user: UserData = jwtDecode(token);
-        console.log(JSON.stringify(user));
+        // console.log(JSON.stringify(user));
         state.token = token;
         state.name = user.name;
         state.email = user.email;
@@ -55,21 +58,8 @@ const authSlice = createSlice({
         state.role = user.role;
         state.isVerified = user.isVerified;
         state.userLoaded = true;
+        state.firstName = user.firstName;
       }
-    },
-    logoutUser(state) {
-      localStorage.removeItem("token");
-      state.token = null;
-      state.name = "";
-      state.email = "";
-      state.userId = "";
-      state.role = "";
-      state.isVerified = false;
-      state.registerStatus = "";
-      state.registerError = "";
-      state.loginStatus = "";
-      state.loginError = "";
-      state.userLoaded = false;
     },
   },
   extraReducers: (builder) => {
@@ -89,6 +79,7 @@ const authSlice = createSlice({
             state.role = user.role;
             state.isVerified = user.isVerified;
             state.registerStatus = "success";
+            state.firstName = user.firstName;
           }
         }
       )
@@ -111,6 +102,7 @@ const authSlice = createSlice({
           state.isVerified = user.isVerified;
           state.loginStatus = "success";
           state.registerError = "";
+          state.firstName = user.firstName;
           toast.success("login sucessfully");
         }
       })
@@ -133,14 +125,29 @@ const authSlice = createSlice({
           state.role = user.role;
           state.isVerified = user.isVerified;
           state.loginStatus = "success";
+          state.firstName = user.firstName;
         }
       })
       .addCase(verifyOtp.rejected, (state, action: PayloadAction<any>) => {
         state.loginStatus = "rejected";
         state.loginError = action.payload;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        localStorage.removeItem("token");
+        state.token = null;
+        state.name = "";
+        state.email = "";
+        state.userId = "";
+        state.role = "";
+        state.isVerified = false;
+        state.registerStatus = "";
+        state.registerError = "";
+        state.loginStatus = "";
+        state.loginError = "";
+        state.userLoaded = false;
       });
   },
 });
 
-export const { loadUser, logoutUser } = authSlice.actions;
+export const { loadUser } = authSlice.actions;
 export default authSlice.reducer;

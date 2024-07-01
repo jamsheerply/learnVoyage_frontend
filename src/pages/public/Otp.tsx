@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import ButtonForm from "../components/ButtonForm";
+import ButtonForm from "../../components/ButtonForm";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
-import { resendOtp, verifyOtp } from "../store/auth/authActions";
+import { resendOtp, verifyOtp } from "../../store/auth/authActions";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { RotateCcw } from "lucide-react";

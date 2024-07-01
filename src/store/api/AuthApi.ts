@@ -3,40 +3,43 @@ import axios, { AxiosInstance } from "axios";
 interface UserData {
   [key: string]: string | number;
 }
-const baseURL = "http://localhost:3000/api";
+const baseURL = `${import.meta.env.VITE_BASE_URL}/users`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
   withCredentials: true,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers["Authorization"] = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 export const registerUserApi = (userData: UserData) => {
-  return api.post("/users/signup", userData);
+  return api.post("/signup", userData);
 };
 
 export const loginUserApi = (userData: UserData) => {
-  return api.post("/users/signin", userData);
+  return api.post("/signin", userData);
 };
 export const resentOTpApi = (userData: UserData) => {
-  return api.post("users/resend-otp", userData);
+  return api.post("/resend-otp", userData);
 };
 export const verifyUserApi = (userData: UserData) => {
-  return api.post("/users/verify-otp", userData);
+  return api.post("/verify-otp", userData);
 };
 
 export const isBlockedApi = (id: string) => {
-  return api.get(`/users/isBlocked/${id}`);
+  return api.get(`/isBlocked/${id}`);
+};
+export const logoutApi = () => {
+  return api.get("/logout");
 };

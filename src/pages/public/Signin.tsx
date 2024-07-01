@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 // import googleIcon from "../assets/image/icons8-google-24.png";
-import signinImage from "../assets/signinPage2.png";
+import signinImage from "../../assets/signinPage2.png";
 import { Link, useNavigate } from "react-router-dom";
-import InputForm from "../components/InputForm";
-import ButtonForm from "../components/ButtonForm";
+import InputForm from "../../components/InputForm";
+import ButtonForm from "../../components/ButtonForm";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/auth/authActions";
-import toast from "react-hot-toast";
+import { loginUser } from "../../store/auth/authActions";
+// import toast from "react-hot-toast";
 
 interface User {
   email: string;

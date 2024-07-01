@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import FileUpload, { UploadedFile } from "../../../components/FileUpload";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  readByIdCategory,
+  createCategory,
   updateCategory,
-} from "../../store/category/CategoryActions";
-import { useNavigate, useParams } from "react-router-dom";
-import FileUploadEditCategory, {
-  UploadedFile,
-} from "../../components/FileUploadEditCategory";
+} from "../../../store/category/CategoryActions";
+import { useNavigate } from "react-router-dom";
 
 interface Category {
   categoryName: string;
@@ -20,14 +18,8 @@ interface Category {
   id: string;
 }
 
-const EditCategory: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const AddCategory: React.FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [errors, setErrors] = useState<Partial<Category>>({});
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState<{ [key: string]: number }>({});
   const categorySelector = useSelector((state: any) => state.category);
   const [category, setCategory] = useState<Category>({
     categoryName: "",
@@ -36,21 +28,11 @@ const EditCategory: React.FC = () => {
     id: "",
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (id) {
-        const response = await dispatch(readByIdCategory(id) as any);
-        const data = response.payload.data;
-        setCategory({
-          categoryName: data.categoryName,
-          isBlocked: data.isBlocked,
-          image: data.image,
-          id: data.id,
-        });
-      }
-    };
-    fetchData();
-  }, [dispatch, id]);
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState<Partial<Category>>({});
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState<{ [key: string]: number }>({});
 
   const handleFileUpload = (files: UploadedFile[]) => {
     setUploadedFiles(files);
@@ -68,7 +50,10 @@ const EditCategory: React.FC = () => {
     try {
       await schema.validate(category, { abortEarly: false });
 
-      const dispatchCategory = await dispatch(updateCategory(category) as any);
+      const dispatchCategory = await dispatch(createCategory(category) as any);
+      console.log(
+        JSON.stringify(dispatchCategory.payload) + " just below dispach"
+      );
       if (dispatchCategory.payload.error) {
         toast.error(dispatchCategory.payload.error);
         setLoading(false);
@@ -135,7 +120,7 @@ const EditCategory: React.FC = () => {
       const categoryData = {
         ...category,
         id: dispatchCategory.payload.data.id,
-        image: fileUrls[0] || category.image,
+        image: fileUrls[0] || "",
       };
 
       await dispatch(updateCategory(categoryData) as any);
@@ -146,7 +131,14 @@ const EditCategory: React.FC = () => {
         return;
       }
 
-      toast.success("Category updated successfully!");
+      toast.success("Category created successfully!");
+      setCategory({
+        categoryName: "",
+        isBlocked: false,
+        image: "",
+        id: "",
+      });
+      setUploadedFiles([]);
       navigate("/admin/categories");
     } catch (validationErrors) {
       const errors: Partial<Category> = {};
@@ -161,15 +153,11 @@ const EditCategory: React.FC = () => {
 
   return (
     <div>
-      <div className="p-3 font-semibold">Categories | Edit Category</div>
+      <div className="p-3 font-semibold">Categories | Add Category</div>
       <div className="flex mx-[10%] w-[80%]">
         <div className="w-full h-full flex justify-center my-3">
           <div>
-            <FileUploadEditCategory
-              onFilesAdded={handleFileUpload}
-              progress={progress}
-              initialImage={category.image}
-            />
+            <FileUpload onFilesAdded={handleFileUpload} progress={progress} />
           </div>
         </div>
         <div className="flex flex-col mx-36 w-[80%] my-3">
@@ -221,4 +209,4 @@ const EditCategory: React.FC = () => {
   );
 };
 
-export default EditCategory;
+export default AddCategory;

@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import TableCategories from "../../components/TableCategories";
-import { AppDispatch, RootState } from "../../store/store";
+import TableCategories from "../../../components/TableCategories";
+import { AppDispatch, RootState } from "../../../store/store";
 import { useEffect } from "react";
-import { readAllCategory } from "../../store/category/CategoryActions";
+import { readAllCategory } from "../../../store/category/CategoryActions";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useNavigate } from "react-router-dom";
-import SomeWentWrong from "../../components/SomeWentWrong";
+import SomeWentWrong from "../../../components/SomeWentWrong";
 
 const Categories = () => {
   const dispatch: AppDispatch = useDispatch();

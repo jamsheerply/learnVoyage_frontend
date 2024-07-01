@@ -8,30 +8,30 @@ interface UserData {
   isBlocked?: boolean;
 }
 
-const baseURL = "http://localhost:3000/api";
+const baseURL = `${import.meta.env.VITE_BASE_URL}/users`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
   withCredentials: true,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers["Authorization"] = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 export const getAllInstructorsApi = () => {
-  return api.get("/users/instructors");
+  return api.get("/instructors");
 };
 
 export const editInstructorApi = (userData: UserData) => {
-  return api.patch("/users/instructor/edit", userData);
+  return api.patch("/instructor/edit", userData);
 };

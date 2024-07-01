@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../../store/store";
-import { logoutUser } from "../../store/auth/authSlice";
+import { logoutUser } from "../../store/auth/authActions";
 import { isBlockedApi } from "../../store/api/AuthApi";
 
 interface ChildProp {
@@ -45,7 +45,7 @@ const InstructorAuth = ({ children }: ChildProp) => {
   }, [isBlockedUser, dispatch]);
 
   if (loading) {
-    return <div>Loading...</div>; // Or a spinner component
+    return <div>Loading...</div>;
   }
 
   if (!auth.userId) {

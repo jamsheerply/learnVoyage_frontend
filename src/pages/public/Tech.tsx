@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import instructorImg from "../assets/instructorPage2.png";
+import instructorImg from "../../assets/instructorPage2.png";
 
 const Tech = () => {
   const navigate = useNavigate();

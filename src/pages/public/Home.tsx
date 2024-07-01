@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import React from "react";
-import homeImg from "../assets/homePage2.png";
+import homeImg from "../../assets/homePage2.png";
 
 const Home: React.FC = () => {
   return (

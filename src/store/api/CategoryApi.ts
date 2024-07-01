@@ -7,7 +7,7 @@ interface CategoryData {
   image: string;
 }
 
-const baseURL = "http://localhost:3000/api/content-management/category";
+const baseURL = `${import.meta.env.VITE_BASE_URL}/content-management/category`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,

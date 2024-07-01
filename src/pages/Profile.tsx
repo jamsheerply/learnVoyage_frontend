@@ -1,5 +1,5 @@
 import InputProfile from "../components/InputProfile";
-import InputProfile2 from "../components/InputProfile2";
+import InputProfile2 from "../components/InputProfileSecond";
 import profileImg from "../assets/profilePic.svg";
 
 const Profile = () => {
