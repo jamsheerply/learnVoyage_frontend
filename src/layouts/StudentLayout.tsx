@@ -9,13 +9,17 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
-import { useDispatch } from "react-redux";
-import { logoutUser } from "../store/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+import { AppDispatch, RootState } from "../store/store";
+import { logoutUser } from "../store/auth/authActions";
 
 const StudentLayout = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
+  const auth = useSelector((state: RootState) => state.auth);
+  console.log(JSON.stringify(auth));
 
   const pathArray = location.pathname.split("/").filter((part) => part !== "");
   const lastValue = pathArray.pop();
@@ -80,8 +84,8 @@ const StudentLayout = () => {
               />
             </div>
             <div>
-              <div>Jamsheer</div>
-              <div>UI & UX Designer</div>
+              <div>{auth.firstName}</div>
+              <div>student</div>
             </div>
           </div>
           <div className="bg-green-100 flex items-center p-4 rounded-md">

@@ -1,10 +1,10 @@
 import { CSSProperties, useEffect, useState } from "react";
-import Table from "../../components/Table";
+import Table from "../../../components/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllInstructorsList } from "../../store/Instructors/InstructorsActions";
-import { AppDispatch, RootState } from "../../store/store";
+import { getAllInstructorsList } from "../../../store/Instructors/InstructorsActions";
+import { AppDispatch, RootState } from "../../../store/store";
 import ClipLoader from "react-spinners/ClipLoader";
-import SomeWentWrong from "../../components/SomeWentWrong";
+import SomeWentWrong from "../../../components/SomeWentWrong";
 
 interface Instructor {
   firstName: string;
@@ -26,7 +26,7 @@ const InstructorList = () => {
   const { instructors, loading, error } = useSelector(
     (state: RootState) => state.instructors
   );
-
+  console.log(JSON.stringify(instructors));
   useEffect(() => {
     dispatch(getAllInstructorsList());
   }, [dispatch]);

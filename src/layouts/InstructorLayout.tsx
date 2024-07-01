@@ -9,11 +9,12 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
+import { AppDispatch, RootState } from "../store/store";
+import { logoutUser } from "../store/auth/authActions";
 import { useDispatch } from "react-redux";
-import { logoutUser } from "../store/auth/authSlice";
 
 const InstructorLayout = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,21 +32,21 @@ const InstructorLayout = () => {
 
   const navItems = [
     { name: "Overview", path: "/instructor/overview", icon: Home },
-    { name: "Enrollments", path: "/instructor/enrollments", icon: BookOpen },
+    { name: "Courses", path: "/instructor/courses", icon: BookOpen },
     { name: "Exams", path: "/instructor/exams", icon: BookText },
     { name: "Messages", path: "/instructor/messages", icon: MessageCircleMore },
     { name: "Settings", path: "/instructor/settings", icon: Settings },
   ];
 
   return (
-    <div className="flex h-[690px]">
-      <aside className="bg-green-100 w-[250px] flex flex-col">
+    <div className="flex ">
+      <aside className="bg-green-100 w-[250px] flex flex-col h-[690px] sticky top-0 left-0">
         <div className="p-4">
           <div className="text-green-600 text-4xl font-semibold text-center my-6">
             Instructor
           </div>
         </div>
-        <nav className="flex flex-col items-center">
+        <nav className="flex flex-col items-center ">
           {navItems.map((item) => (
             <button
               key={item.name}
@@ -69,7 +70,7 @@ const InstructorLayout = () => {
           </button>
         </nav>
       </aside>
-      <main className="flex-1">
+      <main className="flex-1 ">
         <header className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[100px]">
           <div className="text-base font-semibold flex gap-2 items-center">
             <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">

@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   isBlockedApi,
   loginUserApi,
+  logoutApi,
   registerUserApi,
   resentOTpApi,
   verifyUserApi,
@@ -9,10 +10,12 @@ import {
 import {
   IS_BLOCKED,
   LOGIN_USER,
+  LOGOUT,
   REGISTER_USER,
   RESEND_OTP,
   VERIFY_USER,
 } from "./types";
+import { handleAxiosError } from "../../utils.ts/HandleAxiosError";
 
 interface UserData {
   [key: string]: string | number;
@@ -100,3 +103,17 @@ export const isBlocked = createAsyncThunk<
     return rejectWithValue(err.response.data);
   }
 });
+
+export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
+  LOGOUT,
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await logoutApi();
+      const logout = response.data.data;
+      return logout;
+    } catch (error: unknown) {
+      const errorMessage = handleAxiosError(error);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);

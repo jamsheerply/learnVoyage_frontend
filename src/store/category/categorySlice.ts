@@ -37,13 +37,10 @@ const categorySlice = createSlice({
           state.categories = action.payload;
         }
       )
-      .addCase(
-        readAllCategory.rejected,
-        (state, action: PayloadAction<any>) => {
-          state.loading = false;
-          state.error = action.payload;
-        }
-      )
+      .addCase(readAllCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to create course";
+      })
       .addCase(createCategory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -52,9 +49,9 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = null;
       })
-      .addCase(createCategory.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(createCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Failed to create course";
       });
   },
 });
