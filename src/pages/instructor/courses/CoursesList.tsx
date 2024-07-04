@@ -18,6 +18,7 @@ const CoursesList = () => {
     (state: RootState) => state.courses
   );
 
+  console.log(JSON.stringify(courses));
   // Fetch all courses on component mount
   useEffect(() => {
     dispatch(getAllCoursesList());

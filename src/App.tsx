@@ -10,7 +10,7 @@ import Signup from "./pages/public/Signup";
 import Signin from "./pages/public/Signin";
 import Otp from "./pages/public/Otp";
 import StudentLayout from "./layouts/StudentLayout";
-import Profile from "./pages/Profile";
+import Profile from "./pages/common/Profile";
 import AdminLayout from "./layouts/AdminLayout";
 import StudentAuth from "./components/Hoc/StudentAuth";
 import InstructorAuth from "./components/Hoc/InstructorAuth";
@@ -32,6 +32,8 @@ import { SkeletonTheme } from "react-loading-skeleton";
 import EditCourse from "./pages/instructor/courses/EditCourse";
 import EditLesson from "./pages/instructor/courses/EditLesson";
 import Course from "./pages/public/Course";
+import CourseDetails from "./pages/public/CourseDetails";
+import Page404 from "./components/public/Page404";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -40,6 +42,9 @@ const router = createBrowserRouter(
         <Route index element={<Home />} />
         <Route path="tech" element={<Tech />} />
         <Route path="course" element={<Course />} />
+        <Route path="course-details/:id" element={<CourseDetails />} />
+        <Route path="helloworld" element={<Warning />} />
+        <Route path="*" element={<Page404 />} />
       </Route>
 
       <Route path="student-auth">
@@ -59,8 +64,11 @@ const router = createBrowserRouter(
           </StudentAuth>
         }
       >
-        <Route path="overview" />
-        <Route path="settings" element={<Profile />} />
+        <Route path="overview" element={<UnderConstrution />} />
+        <Route path="enrollments" element={<UnderConstrution />} />
+        <Route path="exams" element={<UnderConstrution />} />
+        <Route path="messages" element={<UnderConstrution />} />
+        <Route path="settings" element={<UnderConstrution />} />
       </Route>
 
       <Route
@@ -80,7 +88,7 @@ const router = createBrowserRouter(
         <Route path="enrollments" element={<UnderConstrution />} />
         <Route path="exams" element={<UnderConstrution />} />
         <Route path="messages" element={<UnderConstrution />} />
-        <Route path="settings" element={<Profile />} />
+        <Route path="settings" element={<UnderConstrution />} />
       </Route>
 
       <Route
@@ -97,7 +105,6 @@ const router = createBrowserRouter(
         <Route path="edit-category/:id" element={<EditCategory />} />
         <Route path="profile" element={<Profile />} />
         <Route path="instructors" element={<InstructorList />} />
-        <Route path="helloworld" element={<Warning />} />
       </Route>
     </Route>
   )

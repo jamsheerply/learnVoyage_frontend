@@ -8,12 +8,11 @@ interface ChildProp {
 
 const StudentAuth = ({ children }: ChildProp) => {
   const auth = useSelector((state: any) => state.auth);
-  console.log(auth);
 
   return !auth.userId ? (
-    <Navigate to="/auth/signin" replace />
+    <Navigate to="/student-auth/signin" replace />
   ) : !auth.isVerified ? (
-    <Navigate to="/auth/otp" replace />
+    <Navigate to="/student-auth/otp" replace />
   ) : auth.role !== "student" ? (
     <Navigate to="/" replace />
   ) : (

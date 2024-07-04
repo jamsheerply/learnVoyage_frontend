@@ -11,9 +11,9 @@ const AdminAuth = ({ children }: ChildProp) => {
   console.log(auth);
 
   return !auth.userId ? (
-    <Navigate to="/auth/signin" replace />
+    <Navigate to="/student-auth/signin" replace />
   ) : !auth.isVerified ? (
-    <Navigate to="/auth/otp" replace />
+    <Navigate to="/student-auth/otp" replace />
   ) : auth.role !== "admin" ? (
     <Navigate to="/" replace />
   ) : (
