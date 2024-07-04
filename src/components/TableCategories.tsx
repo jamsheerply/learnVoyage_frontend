@@ -33,8 +33,11 @@ const TableCategories: React.FC<TableProps> = ({ TableHead, TableData }) => {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {TableData &&
-            TableData.map((category) => (
+            TableData.map((category, index) => (
               <tr key={category.id}>
+                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  {index + 1}
+                </td>
                 <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                   {category.categoryName}
                 </td>

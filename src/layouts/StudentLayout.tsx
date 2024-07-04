@@ -13,15 +13,23 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { AppDispatch, RootState } from "../store/store";
 import { logoutUser } from "../store/auth/authActions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shadcn/ui/dropdown-menu";
 
 const StudentLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
-  console.log(JSON.stringify(auth));
 
   const pathArray = location.pathname.split("/").filter((part) => part !== "");
+
   const lastValue = pathArray.pop();
 
   const handleNavigation = (path: string) => {
@@ -75,19 +83,35 @@ const StudentLayout = () => {
       </aside>
       <main className="flex-1">
         <header className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[100px]">
-          <div className="text-base font-semibold flex gap-2 items-center">
-            <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">
-              <img
-                src={profileImg}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <div>{auth.firstName}</div>
-              <div>student</div>
-            </div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="text-base font-semibold flex gap-2 items-center">
+                <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">
+                  <img
+                    src={profileImg}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <div>{auth.firstName}</div>
+                  <div>student</div>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
+                Home
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div className="bg-green-100 flex items-center p-4 rounded-md">
             <Bell />
           </div>

@@ -117,7 +117,6 @@ const authSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action: PayloadAction<string>) => {
         if (action.payload) {
           const user: UserData = jwtDecode(action.payload);
-          console.log(JSON.stringify(user));
           state.token = action.payload;
           state.name = user.name;
           state.email = user.email;

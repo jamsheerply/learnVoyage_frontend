@@ -20,10 +20,12 @@ const CreateCourse: React.FC = () => {
   }, [dispatch]);
 
   const { categories } = useSelector((state: RootState) => state.category);
+  const { userId } = useSelector((state: RootState) => state.auth);
 
   // Initial course state setup
   const [course, setCourse] = useState<Course>({
     courseName: "",
+    mentorId: userId,
     categoryId: "",
     description: "",
     language: "",
@@ -138,6 +140,7 @@ const CreateCourse: React.FC = () => {
   const handleSubmit = async () => {
     try {
       await schema.validate(course, { abortEarly: false });
+
       const response = await dispatch(createCourse(course));
       const createdCourse = response.payload as ResponseData;
 

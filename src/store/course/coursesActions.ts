@@ -12,8 +12,10 @@ import {
   updatedCourseApi,
 } from "../api/CourseApi";
 import { handleAxiosError } from "../../utils.ts/HandleAxiosError";
+import { PayloadActionProp } from "./coursesSlice";
 
 export interface Course {
+  mentorId?: string;
   courseName?: string;
   categoryId?: string;
   description?: string;
@@ -38,13 +40,13 @@ export interface CourseWithLesson {
 }
 
 export const getAllCoursesList = createAsyncThunk<
-  Course[],
+  PayloadActionProp,
   void,
   { rejectValue: string }
 >(GET_ALL_COURSES, async (_, { rejectWithValue }) => {
   try {
     const response = await getAllCourseApi();
-    // console.log(JSON.stringify(response.data.data));
+    console.log(JSON.stringify(response.data.data));
     return response.data.data;
   } catch (error: unknown) {
     const errorMessage = handleAxiosError(error);

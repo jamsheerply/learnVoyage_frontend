@@ -106,7 +106,7 @@ export const AddLesson = () => {
         const updatedLessons = prevLessons.filter(
           (lesson) => lesson.lessonId !== lessonId
         );
-        handleUploadAllLessons(updatedLessons);
+        handleUploadAllLessons(updatedLessons, true);
         return updatedLessons;
       });
     } else {
@@ -167,7 +167,10 @@ export const AddLesson = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleUploadAllLessons = async (updatedLessons?: Lesson[]) => {
+  const handleUploadAllLessons = async (
+    updatedLessons?: Lesson[],
+    remove = false
+  ) => {
     const lessonsToUpload = updatedLessons || lessons;
 
     const isValid = await validateLessons(lessonsToUpload);
@@ -183,8 +186,10 @@ export const AddLesson = () => {
     };
     try {
       await dispatch(updateCourse(updatedCourse));
-      toast.success("lesson created successfully!");
-      navigate("/instructor/courses");
+      if (!remove) {
+        toast.success("lesson created successfully!");
+        navigate("/instructor/courses");
+      }
     } catch (error) {
       console.error("Failed to update course:", error);
     }

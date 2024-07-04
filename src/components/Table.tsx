@@ -43,7 +43,10 @@ const Table: React.FC<TableProps> = ({ TableHead, TableData }) => {
             {TableHead.map((head, index) => (
               <th
                 key={index}
-                className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer"
+                onClick={() => {
+                  alert(head);
+                }}
               >
                 {head}
               </th>

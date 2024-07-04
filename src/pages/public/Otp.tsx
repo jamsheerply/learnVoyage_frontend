@@ -13,7 +13,6 @@ const Otp = () => {
   const navigate = useNavigate();
   const auth = useSelector((state: any) => state.auth);
 
-  // User object with initial values for OTP and userId from the Redux state
   interface User {
     [key: string]: string | number;
     otp: string;
@@ -25,8 +24,8 @@ const Otp = () => {
   });
 
   const [errors, setErrors] = useState("");
+  const [time, setTime] = useState(120);
 
-  // Effect to handle navigation and displaying error messages
   useEffect(() => {
     if (auth.loginError) {
       toast.error(auth.loginError.error);
@@ -44,7 +43,6 @@ const Otp = () => {
     }
   }, [auth.userId, auth.isVerified, auth.role, navigate, auth.loginError]);
 
-  // Validation schema for OTP using Yup
   const schema = Yup.object().shape({
     otp: Yup.string()
       .required("OTP is required")
@@ -52,39 +50,27 @@ const Otp = () => {
       .max(6, "OTP must be less than 6 characters"),
   });
 
-  const [time, setTime] = useState(120);
-
-  // Timer effect to count down from 120 seconds to 0
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((prevTime) => {
-        if (prevTime > 0) {
-          return prevTime - 1;
-        } else {
-          clearInterval(interval);
-          return prevTime;
-        }
-      });
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+    if (time > 0) {
+      const interval = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [time]);
 
   const handleResendOtp = () => {
     dispatch(resendOtp({ email: auth.email, userId: auth.userId }) as any);
-    setTime(120); // Reset the timer after resending OTP
+    setTime(120);
   };
 
-  // Function to handle OTP verification
   const handleVerifyOtp = async () => {
     try {
       await schema.validate(user, { abortEarly: false });
-      setErrors(""); // Clear errors if validation passes
+      setErrors("");
       dispatch(verifyOtp(user) as any);
     } catch (validationErrors: any) {
-      const firstError = validationErrors.inner[0].message; // Get the first error message
+      const firstError = validationErrors.inner[0].message;
       setErrors(firstError);
     }
   };

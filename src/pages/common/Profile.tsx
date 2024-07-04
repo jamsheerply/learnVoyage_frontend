@@ -1,6 +1,6 @@
-import InputProfile from "../components/InputProfile";
-import InputProfile2 from "../components/InputProfileSecond";
-import profileImg from "../assets/profilePic.svg";
+import InputProfile from "../../components/InputProfile";
+import InputProfile2 from "../../components/InputProfileSecond";
+import profileImg from "../../assets/profilePic.svg";
 
 const Profile = () => {
   return (

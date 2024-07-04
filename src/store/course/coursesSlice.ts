@@ -9,13 +9,26 @@ import {
 // import { CourseWithLesson } from "../../pages/instructor/courses/AddLesson";
 
 interface CourseState {
+  total?: Number;
+  page?: Number;
+  limit?: Number;
   courses: Course[];
   course: CourseWithLesson | null;
   loading: boolean;
   error: string | null;
 }
 
+export interface PayloadActionProp {
+  total?: Number;
+  page?: Number;
+  limit?: Number;
+  courses: Course[];
+}
+
 const initialState: CourseState = {
+  total: 0,
+  page: 0,
+  limit: 0,
   courses: [],
   course: null,
   loading: false,
@@ -34,9 +47,12 @@ const coursesSlice = createSlice({
       })
       .addCase(
         getAllCoursesList.fulfilled,
-        (state, action: PayloadAction<Course[]>) => {
+        (state, action: PayloadAction<PayloadActionProp>) => {
           state.loading = false;
-          state.courses = action.payload;
+          state.courses = action.payload.courses;
+          state.limit = action.payload.limit;
+          state.page = action.payload.page;
+          state.total = action.payload.total;
         }
       )
       .addCase(
