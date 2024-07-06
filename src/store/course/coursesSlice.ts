@@ -9,9 +9,9 @@ import {
 // import { CourseWithLesson } from "../../pages/instructor/courses/AddLesson";
 
 interface CourseState {
-  total?: Number;
-  page?: Number;
-  limit?: Number;
+  total?: number;
+  page?: number;
+  limit?: number;
   courses: Course[];
   course: CourseWithLesson | null;
   loading: boolean;
@@ -19,9 +19,9 @@ interface CourseState {
 }
 
 export interface PayloadActionProp {
-  total?: Number;
-  page?: Number;
-  limit?: Number;
+  total?: number;
+  page?: number;
+  limit?: number;
   courses: Course[];
 }
 

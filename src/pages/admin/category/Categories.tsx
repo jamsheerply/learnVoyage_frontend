@@ -1,3 +1,4 @@
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import TableCategories from "../../../components/TableCategories";
 import { AppDispatch, RootState } from "../../../store/store";
@@ -10,7 +11,6 @@ import { Input } from "@/shadcn/ui/input";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,

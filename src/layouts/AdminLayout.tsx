@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Bell,
   Home,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
-import { AppDispatch, RootState } from "../store/store";
+import { AppDispatch } from "../store/store";
 import { logoutUser } from "../store/auth/authActions";
 import { useDispatch } from "react-redux";
 
@@ -34,8 +35,8 @@ const AdminLayout = () => {
     { name: "Overview", path: "/admin/overview", icon: Home },
     { name: "Categories", path: "/admin/categories", icon: ShoppingBag },
     { name: "Instructors", path: "/admin/instructors", icon: NotebookPen },
-    // { name: "Messages", path: "/admin/messages", icon: MessageCircleMore },
-    // { name: "Settings", path: "/admin/settings", icon: Settings },
+    { name: "Messages", path: "/admin/messages", icon: MessageCircleMore },
+    { name: "Settings", path: "/admin/settings", icon: Settings },
   ];
 
   return (

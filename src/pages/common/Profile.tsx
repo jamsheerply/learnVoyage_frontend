@@ -1,3 +1,4 @@
+import React from "react";
 import InputProfile from "../../components/InputProfile";
 import InputProfile2 from "../../components/InputProfileSecond";
 import profileImg from "../../assets/profilePic.svg";

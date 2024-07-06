@@ -13,7 +13,7 @@ import {
 } from "./types";
 import { handleAxiosError } from "../../utils.ts/HandleAxiosError";
 
-interface Category {
+export interface Category {
   id: string;
   categoryName: string;
   isBlocked: boolean;

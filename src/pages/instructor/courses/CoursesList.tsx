@@ -1,3 +1,4 @@
+import React from "react";
 import { Plus } from "lucide-react";
 import CourseCard from "../../../components/instructor/courses/CourseCard";
 import { useNavigate } from "react-router-dom";

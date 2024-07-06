@@ -1,3 +1,4 @@
+import React from "react";
 import { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
@@ -15,7 +16,7 @@ const InstructorAuth = ({ children }: ChildProp) => {
   const location = useLocation();
   // Use the useLocation hook to listen to route changes
 
-  const [isBlockedUser, setIsBlockedUser] = useState<boolean | any>(null);
+  const [isBlockedUser, setIsBlockedUser] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

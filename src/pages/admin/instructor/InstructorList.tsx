@@ -1,3 +1,4 @@
+import React from "react";
 import { CSSProperties, useEffect, useState } from "react";
 import Table from "../../../components/Table";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,7 +46,7 @@ type Checked = DropdownMenuCheckboxItemProps["checked"];
 
 const InstructorList = () => {
   const dispatch: AppDispatch = useDispatch();
-  let [color] = useState("#ffffff");
+  const [color] = useState("#ffffff");
   const { instructors, loading, error } = useSelector(
     (state: RootState) => state.instructors
   );
@@ -63,7 +64,7 @@ const InstructorList = () => {
   }));
 
   const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
-  const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
+  // const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
   const [showPanel, setShowPanel] = useState<Checked>(false);
 
   if (loading) {
