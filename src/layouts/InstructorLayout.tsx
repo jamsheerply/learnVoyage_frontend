@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Bell,
   Home,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
-import { AppDispatch, RootState } from "../store/store";
+import { AppDispatch } from "../store/store";
 import { logoutUser } from "../store/auth/authActions";
 import { useDispatch } from "react-redux";
 

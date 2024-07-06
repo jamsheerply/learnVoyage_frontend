@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 import { CSSProperties, useEffect, useState } from "react";
@@ -185,7 +186,7 @@ const EditCourse = () => {
     image: category.image,
   }));
 
-  let [color] = useState("#ffffff");
+  const [color] = useState("#ffffff");
 
   const override: CSSProperties = {
     display: "block",

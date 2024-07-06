@@ -10,6 +10,7 @@ import {
   updateCategory,
 } from "../../../store/category/CategoryActions";
 import { useNavigate } from "react-router-dom";
+import { RootState } from "@/store/store";
 
 interface Category {
   categoryName: string;
@@ -20,7 +21,7 @@ interface Category {
 
 const AddCategory: React.FC = () => {
   const dispatch = useDispatch();
-  const categorySelector = useSelector((state: any) => state.category);
+  const categorySelector = useSelector((state: RootState) => state.category);
   const [category, setCategory] = useState<Category>({
     categoryName: "",
     isBlocked: false,
@@ -117,7 +118,7 @@ const AddCategory: React.FC = () => {
         }
       }
 
-      const categoryData = {
+      const categoryData: Category = {
         ...category,
         id: dispatchCategory.payload.data.id,
         image: fileUrls[0] || "",

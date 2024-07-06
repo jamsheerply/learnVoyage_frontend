@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 // import googleIcon from "../assets/image/icons8-google-24.png";
 import signinImage from "../../assets/signinPage2.png";

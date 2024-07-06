@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import instructorImg from "../../assets/instructorPage2.png";
 
