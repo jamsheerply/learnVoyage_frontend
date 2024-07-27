@@ -1,6 +1,6 @@
 import React from "react";
-import InputProfile from "../../components/InputProfile";
-import InputProfile2 from "../../components/InputProfileSecond";
+import InputProfile from "../../components/public/profile/InputProfile";
+import InputProfile2 from "../../components/public/profile/InputProfileSecond";
 import profileImg from "../../assets/profilePic.svg";
 
 const Profile = () => {
@@ -11,34 +11,114 @@ const Profile = () => {
         <div className="w-[80%] ">
           <div className="flex gap-5">
             <span>
-              <InputProfile type="text" placeholder="First Name" />
+              <InputProfile
+                type="text"
+                placeholder="First Name"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
             <span>
-              <InputProfile type="text" placeholder="Last Name" />
+              <InputProfile
+                type="text"
+                placeholder="Last Name"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
           </div>
           <div className="flex gap-5">
             <span>
-              <InputProfile type="text" placeholder="Email" />
+              <InputProfile
+                type="text"
+                placeholder="Email"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
             <span>
-              <InputProfile type="text" placeholder="Phone Number" />
+              <InputProfile
+                type="text"
+                placeholder="Phone Number"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
           </div>
           <div className="flex gap-5">
             <span>
-              <InputProfile type="text" placeholder="Profession" />
+              <InputProfile
+                type="text"
+                placeholder="Profession"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
             <span>
-              <InputProfile type="text" placeholder="UserName" />
+              <InputProfile
+                type="text"
+                placeholder="UserName"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
           </div>
           <div className="flex gap-5">
             <span>
-              <InputProfile type="text" placeholder="Password" />
+              <InputProfile
+                type="text"
+                placeholder="Password"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
             <span>
-              <InputProfile type="text" placeholder="Confirm Password" />
+              <InputProfile
+                type="text"
+                placeholder="Confirm Password"
+                name={""}
+                value={""}
+                onChange={function (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </span>
           </div>
         </div>
@@ -55,13 +135,43 @@ const Profile = () => {
       <div className="w-[80%] ">
         <div className="flex gap-5">
           <span>
-            <InputProfile2 type="text" placeholder="Address" />
+            <InputProfile2
+              type="text"
+              placeholder="Address"
+              name={""}
+              value={""}
+              onChange={function (
+                event: React.ChangeEvent<HTMLInputElement>
+              ): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </span>
           <span>
-            <InputProfile2 type="text" placeholder="City" />
+            <InputProfile2
+              type="text"
+              placeholder="City"
+              name={""}
+              value={""}
+              onChange={function (
+                event: React.ChangeEvent<HTMLInputElement>
+              ): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </span>
           <span>
-            <InputProfile2 type="text" placeholder="Country" />
+            <InputProfile2
+              type="text"
+              placeholder="Country"
+              name={""}
+              value={""}
+              onChange={function (
+                event: React.ChangeEvent<HTMLInputElement>
+              ): void {
+                throw new Error("Function not implemented.");
+              }}
+            />
           </span>
         </div>
         <div>

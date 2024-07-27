@@ -14,7 +14,7 @@ import { AppDispatch, RootState } from "../../../store/store";
 import { readAllCategory } from "../../../store/category/CategoryActions";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import SomeWentWrong from "../../../components/SomeWentWrong";
+import SomeWentWrong from "../../../components/public/common/SomeWentWrong";
 
 const EditCourse = () => {
   const { id } = useParams<{ id: string }>();

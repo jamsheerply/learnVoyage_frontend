@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import toast from "react-hot-toast";
 
 const CreateCourse: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  // const dispatch: () => AppDispatch = useDispatch;
   const navigate = useNavigate();
 
   // Select category data from Redux store

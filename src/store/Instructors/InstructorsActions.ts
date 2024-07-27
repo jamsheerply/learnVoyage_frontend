@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { EDIT_INSTRUCTOR, GET_ALL_INSTRUCTORS } from "./types";
 import { editInstructorApi, getAllInstructorsApi } from "../api/InstructorApi";
+import { handleAxiosError } from "@/utils.ts/HandleAxiosError";
 
 interface Instructor {
   firstName: string;
@@ -15,35 +16,31 @@ interface EditInstructorParams {
   isBlocked: boolean;
 }
 
-interface AsyncThunkConfig<T> {
-  rejectValue: T;
-}
-
 export const getAllInstructorsList = createAsyncThunk<
   Instructor[],
   void,
-  AsyncThunkConfig<any>
+  { rejectValue: string }
 >(GET_ALL_INSTRUCTORS, async (_, { rejectWithValue }) => {
   try {
     const response = await getAllInstructorsApi();
     return response.data.data;
-  } catch (err: any) {
-    console.log(err.response.data);
-    return rejectWithValue(err.response.data);
+  } catch (error: unknown) {
+    const errorMessage = handleAxiosError(error);
+    return rejectWithValue(errorMessage);
   }
 });
 
 export const editInstructor = createAsyncThunk<
   Instructor[],
   EditInstructorParams,
-  AsyncThunkConfig<any>
+  { rejectValue: string }
 >(EDIT_INSTRUCTOR, async (values, { rejectWithValue }) => {
   try {
     const response = await editInstructorApi(values);
     console.log(JSON.stringify(response));
     return response.data.data;
-  } catch (err: any) {
-    console.log(err.response.data);
-    return rejectWithValue(err.response.data);
+  } catch (error: unknown) {
+    const errorMessage = handleAxiosError(error);
+    return rejectWithValue(errorMessage);
   }
 });

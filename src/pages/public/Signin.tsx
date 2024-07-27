@@ -1,27 +1,40 @@
 import React from "react";
 import { useEffect, useState } from "react";
-// import googleIcon from "../assets/image/icons8-google-24.png";
 import signinImage from "../../assets/signinPage2.png";
 import { Link, useNavigate } from "react-router-dom";
-import InputForm from "../../components/InputForm";
-import ButtonForm from "../../components/ButtonForm";
+import InputForm from "../../components/public/auth/InputForm";
+import ButtonForm from "../../components/public/auth/ButtonForm";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/auth/authActions";
-// import toast from "react-hot-toast";
+import { RootState } from "@/store/store";
+import toast from "react-hot-toast";
+import * as Yup from "yup";
 
 interface User {
   email: string;
   password: string;
   [key: string]: string;
 }
+
 const Signin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const auth = useSelector((state: any) => state.auth);
+  const auth = useSelector((state: RootState) => state.auth);
   const [user, setUser] = useState<User>({
     email: "",
     password: "",
+  });
+  const [errors, setErrors] = useState<Partial<User>>({});
+
+  const schema = Yup.object().shape({
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .max(25, "Password must be less than 25 characters"),
   });
 
   useEffect(() => {
@@ -38,39 +51,44 @@ const Signin = () => {
     }
   }, [auth.userId, auth.isVerified, auth.role, navigate]);
 
-  const handleSignin = () => {
-    dispatch(loginUser(user) as any);
+  const handleSignin = async () => {
+    try {
+      await schema.validate(user, { abortEarly: false });
+      await dispatch(loginUser(user) as any);
+    } catch (validationErrors: any) {
+      const newErrors: Partial<User> = {};
+      validationErrors.inner.forEach((error: any) => {
+        newErrors[error.path as keyof User] = error.message;
+      });
+      setErrors(newErrors);
+    }
   };
+
+  useEffect(() => {
+    if (auth.loginError) {
+      toast.error(auth.loginError.error);
+    }
+  }, [auth.loginError]);
+
   return (
     <div className="grid grid-cols-1 min-h-screen lg:grid-cols-2">
       <div className="w-full h-full flex items-center justify-center">
         <div className="flex-col items-end w-[80%] p-2">
-          {/* <ButtonForm
-            nameButton={
-              <span className="flex justify-center">
-                <span>
-                  <img src={googleIcon} alt="Google Icon" className="mr-2" />
-                </span>
-                Sign In with Google
-              </span>
-            }
-            tailwindBClass="my-2"
-            tailwindBBClass="bg-green-200"
-          /> */}
-          {/* <div className="text-center font-bold">OR</div>
-          <hr className="border-0 h-px bg-gray-300" /> */}
-          <div className="text-center font-bold  text-3xl">
+          <div className="text-center font-bold text-3xl">
             <h1>Login</h1>
           </div>
           <InputForm
             placeholder="Email"
             type="text"
-            tailwindIClass="my-6"
+            tailwindIClass="my-2"
             value={user.email}
             onChange={(e) => {
               setUser({ ...user, email: e.target.value });
             }}
           />
+          {errors.email && (
+            <div className="text-red-500 mx-[125px]">{errors.email}</div>
+          )}
           <InputForm
             placeholder="Password"
             type="password"
@@ -80,7 +98,9 @@ const Signin = () => {
               setUser({ ...user, password: e.target.value });
             }}
           />
-          {/* <div className="sm:px-[195px] lg:px-[130px] ">Forget Password?</div> */}
+          {errors.password && (
+            <div className="text-red-500 mx-[125px]">{errors.password}</div>
+          )}
           <ButtonForm
             nameButton="Sign In"
             tailwindBClass="my-2"

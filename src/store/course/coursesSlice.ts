@@ -6,7 +6,6 @@ import {
   getAllCoursesList,
   readByIdCourse,
 } from "./coursesActions";
-// import { CourseWithLesson } from "../../pages/instructor/courses/AddLesson";
 
 interface CourseState {
   total?: number;

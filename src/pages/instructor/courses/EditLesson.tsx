@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Plus, X } from "lucide-react";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -13,8 +13,8 @@ import {
 } from "../../../store/course/coursesActions";
 import { AppDispatch, RootState } from "../../../store/store";
 import toast from "react-hot-toast";
-import SomeWentWrong from "../../../components/SomeWentWrong";
-import Modal from "../../../components/Modal";
+import SomeWentWrong from "../../../components/public/common/SomeWentWrong";
+import Modal from "../../../components/instructor/courses/Modal";
 
 interface ErrorState {
   [key: number]: {

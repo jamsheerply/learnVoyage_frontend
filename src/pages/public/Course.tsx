@@ -1,7 +1,7 @@
 import React from "react";
 import { Filter } from "lucide-react";
-import CourseCard from "../../components/public/CourseCard";
-import CourseFilter from "../../components/public/CourseFilter";
+import CourseCard from "../../components/public/course/CourseCard";
+import CourseFilter from "../../components/public/course/CourseFilter";
 import {
   Pagination,
   PaginationContent,
@@ -10,7 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/shadcn/ui/pagination";
-import Footer from "@/components/public/Footer";
+import Footer from "../../components/public/common/Footer";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { readAllCategory } from "@/store/category/CategoryActions";
