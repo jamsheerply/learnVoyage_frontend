@@ -1,4 +1,5 @@
-import React from "react"; // Add this line
+/* eslint-disable react/react-in-jsx-scope */
+
 import {
   Route,
   RouterProvider,
@@ -24,8 +25,7 @@ import Categories from "./pages/admin/category/Categories";
 import { Toaster } from "react-hot-toast";
 import AddCategory from "./pages/admin/category/AddCategory";
 import EditCategory from "./pages/admin/category/EditCategory";
-import Warning from "./components/SomeWentWrong";
-import UnderConstrution from "./components/UnderConstruction";
+import UnderConstrution from "./components/public/common/UnderConstruction";
 import CoursesList from "./pages/instructor/courses/CoursesList";
 import CreateCourse from "./pages/instructor/courses/CreateCourse";
 import { AddLesson } from "./pages/instructor/courses/AddLesson";
@@ -34,7 +34,21 @@ import EditCourse from "./pages/instructor/courses/EditCourse";
 import EditLesson from "./pages/instructor/courses/EditLesson";
 import Course from "./pages/public/Course";
 import CourseDetails from "./pages/public/CourseDetails";
-import Page404 from "./components/public/Page404";
+import Page404 from "./components/public/common/Page404";
+import Chat from "./pages/admin/chat/Chat";
+import EnrollmentList from "./pages/student/enrollment/EnrollmentList";
+import EnrollmentListDetail from "./pages/student/enrollment/EnrollmentListDetail";
+import CoursePaymentSuccess from "./pages/student/payment/CoursePaymentSuccess";
+import CoursePaymentFailed from "./pages/student/payment/CoursePaymentFailed";
+import StudentProfile from "./pages/student/settings/StudentProfile";
+import CourseListA from "./pages/admin/course/CourseListA";
+import Analytics from "./pages/instructor/analytics/Analytics";
+import Transactions from "./pages/admin/transactions/Transactions";
+import MentorGrid from "./pages/public/mentor/MentorGrid";
+import MentorDetails from "./pages/public/mentor/MentorDetails";
+import VideoList from "./pages/public/VideoList";
+import SingleVideo from "./pages/public/SingleVideo";
+import VideoUpload from "./pages/public/VideoUpload";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,7 +58,16 @@ const router = createBrowserRouter(
         <Route path="tech" element={<Tech />} />
         <Route path="course" element={<Course />} />
         <Route path="course-details/:id" element={<CourseDetails />} />
-        <Route path="helloworld" element={<Warning />} />
+        <Route path="payment-success" element={<CoursePaymentSuccess />} />
+        <Route path="payment-failed" element={<CoursePaymentFailed />} />
+        <Route path="mentors" element={<MentorGrid />} />
+        <Route path="mentor-details/:id" element={<MentorDetails />} />
+
+        {/* video test */}
+        <Route path="video-upload" element={<VideoUpload />} />
+        <Route path="video-list" element={<VideoList />} />
+        <Route path="video-streaming/:id" element={<SingleVideo />} />
+
         <Route path="*" element={<Page404 />} />
       </Route>
 
@@ -66,10 +89,12 @@ const router = createBrowserRouter(
         }
       >
         <Route path="overview" element={<UnderConstrution />} />
-        <Route path="enrollments" element={<UnderConstrution />} />
+        <Route path="enrollments" element={<EnrollmentList />} />
+        <Route path="enrollments/:id" element={<EnrollmentListDetail />} />
         <Route path="exams" element={<UnderConstrution />} />
-        <Route path="messages" element={<UnderConstrution />} />
-        <Route path="settings" element={<UnderConstrution />} />
+        <Route path="chat" element={<UnderConstrution />} />
+        <Route path="messages" element={<Chat />} />
+        <Route path="settings" element={<StudentProfile />} />
       </Route>
 
       <Route
@@ -86,10 +111,10 @@ const router = createBrowserRouter(
         <Route path="add-lesson/:id" element={<AddLesson />} />
         <Route path="edit-course/:id" element={<EditCourse />} />
         <Route path="edit-lesson/:id" element={<EditLesson />} />
-        <Route path="enrollments" element={<UnderConstrution />} />
+        <Route path="analytics" element={<Analytics />} />
         <Route path="exams" element={<UnderConstrution />} />
-        <Route path="messages" element={<UnderConstrution />} />
-        <Route path="settings" element={<UnderConstrution />} />
+        <Route path="messages" element={<Chat />} />
+        <Route path="settings" element={<StudentProfile />} />
       </Route>
 
       <Route
@@ -104,8 +129,11 @@ const router = createBrowserRouter(
         <Route path="categories" element={<Categories />} />
         <Route path="add-category" element={<AddCategory />} />
         <Route path="edit-category/:id" element={<EditCategory />} />
+        <Route path="course" element={<CourseListA />} />
         <Route path="profile" element={<Profile />} />
         <Route path="instructors" element={<InstructorList />} />
+        <Route path="transactions" element={<Transactions />} />
+        <Route path="messages" element={<Chat />} />
       </Route>
     </Route>
   )

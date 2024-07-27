@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 // import googleIcon from "../assets/image/icons8-google-24.png";
 import { Link, useNavigate } from "react-router-dom";
-import InputForm from "../../components/InputForm";
-import ButtonForm from "../../components/ButtonForm";
+import InputForm from "../../components/public/auth/InputForm";
+import ButtonForm from "../../components/public/auth/ButtonForm";
 import signupImage from "../../assets/signupInstructorPage.png";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../store/auth/authActions";
 import toast from "react-hot-toast";
+import { RootState } from "@/store/store";
 
 interface User {
   firstName: string;
@@ -21,7 +22,7 @@ interface User {
 
 const InstructorSignup: React.FC = () => {
   const navigate = useNavigate();
-  const auth = useSelector((state: any) => state.auth);
+  const auth = useSelector((state: RootState) => state.auth);
 
   const [user, setUser] = useState<User>({
     firstName: "",

@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAllInstructorsList, editInstructor } from "./InstructorsActions";
 
 interface Instructor {
+  profession: string;
+  profile: any;
   firstName: string;
   lastName: string;
   email: string;

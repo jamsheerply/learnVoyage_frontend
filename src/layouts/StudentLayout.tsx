@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Bell,
   Home,
@@ -22,15 +22,50 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
+import { getProfileById } from "@/store/profile/profileActions";
 
 const StudentLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.profile);
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
 
-  const pathArray = location.pathname.split("/").filter((part) => part !== "");
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        await dispatch(getProfileById(auth.userId));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
+    if (auth.userId) {
+      fetchUserData();
+    }
+  }, [dispatch, auth.userId]);
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: `${user.firstName} ${user.lastName}`,
+        profilePic: user.profile?.avatar || profileImg,
+        profession: user.profession || "Student",
+      });
+    }
+  }, [user]);
+
+  const [profile, setProfile] = useState<{
+    name: string;
+    profilePic: string;
+    profession: string;
+  }>({
+    name: "",
+    profilePic: "",
+    profession: "",
+  });
+
+  const pathArray = location.pathname.split("/").filter((part) => part !== "");
   const lastValue = pathArray.pop();
 
   const handleNavigation = (path: string) => {
@@ -52,7 +87,7 @@ const StudentLayout = () => {
 
   return (
     <div className="flex h-[690px]">
-      <aside className="bg-green-100 w-[250px] flex flex-col">
+      <aside className="bg-green-100 w-[250px] flex flex-col h-[690px] sticky top-0 left-0">
         <div className="p-4">
           <div className="text-green-600 text-4xl font-semibold text-center my-6">
             Student
@@ -82,21 +117,21 @@ const StudentLayout = () => {
           </button>
         </nav>
       </aside>
-      <main className="flex-1">
-        <header className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[100px]">
+      <main className="flex-1 overflow-y-auto">
+        <header className="text-black py-4 px-6 flex gap-5 justify-end items-center h-[90px] ">
           <DropdownMenu>
             <DropdownMenuTrigger>
               <div className="text-base font-semibold flex gap-2 items-center">
                 <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">
                   <img
-                    src={profileImg}
+                    src={profile.profilePic}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div>
-                  <div>{auth.firstName}</div>
-                  <div>student</div>
+                <div className=" flex flex-col items-start">
+                  <div>{profile.name}</div>
+                  <div>{profile.profession}</div>
                 </div>
               </div>
             </DropdownMenuTrigger>
@@ -110,14 +145,21 @@ const StudentLayout = () => {
               >
                 Home
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigate("/course");
+                }}
+              >
+                Course
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <div className="bg-green-100 flex items-center p-4 rounded-md">
-            <Bell />
+            <Bell className="text-green-500" />
           </div>
         </header>
-        <hr className="h-px my-2 bg-gray-400 border-0" />
+        <hr className="h-px bg-gray-400 border-0" />
         <Outlet />
       </main>
     </div>

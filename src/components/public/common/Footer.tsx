@@ -1,5 +1,6 @@
-import React from "react";
-import { Logo } from "../Logo";
+/* eslint-disable react/react-in-jsx-scope */
+
+import { Logo } from "../auth/Logo";
 import { SocialIcon } from "react-social-icons";
 const Footer = () => {
   return (

@@ -1,11 +1,12 @@
-import React from "react";
+/* eslint-disable react/react-in-jsx-scope */
+
 import { CSSProperties, useEffect, useState } from "react";
-import Table from "../../../components/Table";
+import Table from "../../../components/admin/instructor/Table";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllInstructorsList } from "../../../store/Instructors/InstructorsActions";
 import { AppDispatch, RootState } from "../../../store/store";
 import ClipLoader from "react-spinners/ClipLoader";
-import SomeWentWrong from "../../../components/SomeWentWrong";
+import SomeWentWrong from "../../../components/public/common/SomeWentWrong";
 import { Input } from "@/shadcn/ui/input";
 import {
   Pagination,

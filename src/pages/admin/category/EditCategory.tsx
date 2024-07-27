@@ -11,7 +11,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import FileUploadEditCategory, {
   UploadedFile,
-} from "../../../components/FileUploadEditCategory";
+} from "../../../components/admin/category/FileUploadEditCategory";
+import { AppDispatch, RootState } from "@/store/store";
 
 interface Category {
   categoryName: string;
@@ -22,13 +23,13 @@ interface Category {
 
 const EditCategory: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [errors, setErrors] = useState<Partial<Category>>({});
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<{ [key: string]: number }>({});
-  const categorySelector = useSelector((state: any) => state.category);
+  const categorySelector = useSelector((state: RootState) => state.category);
   const [category, setCategory] = useState<Category>({
     categoryName: "",
     isBlocked: false,
@@ -138,7 +139,7 @@ const EditCategory: React.FC = () => {
         image: fileUrls[0] || category.image,
       };
 
-      await dispatch(updateCategory(categoryData) as any);
+      await dispatch(updateCategory(categoryData));
 
       if (categorySelector.error) {
         toast.error(categorySelector.error.error);

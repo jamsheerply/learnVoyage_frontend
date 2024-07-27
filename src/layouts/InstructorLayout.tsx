@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable react/react-in-jsx-scope */
+import { useEffect, useState } from "react";
 import {
   Bell,
   Home,
@@ -10,14 +11,51 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import profileImg from "../assets/profilePic.svg";
-import { AppDispatch } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import { logoutUser } from "../store/auth/authActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfileById } from "@/store/profile/profileActions";
 
 const InstructorLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.profile);
+  const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        await dispatch(getProfileById(auth.userId));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (auth.userId) {
+      fetchUserData();
+    }
+  }, [dispatch, auth.userId]);
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: `${user.firstName} ${user.lastName}`,
+        profilePic: user.profile?.avatar || profileImg,
+        profession: user.profession || "instructor",
+      });
+    }
+  }, [user]);
+
+  const [profile, setProfile] = useState<{
+    name: string;
+    profilePic: string;
+    profession: string;
+  }>({
+    name: "",
+    profilePic: "",
+    profession: "",
+  });
 
   const pathArray = location.pathname.split("/").filter((part) => part !== "");
   const lastValue = pathArray.pop();
@@ -35,6 +73,7 @@ const InstructorLayout = () => {
     { name: "Overview", path: "/instructor/overview", icon: Home },
     { name: "Courses", path: "/instructor/courses", icon: BookOpen },
     { name: "Exams", path: "/instructor/exams", icon: BookText },
+    { name: "Analytics", path: "/instructor/analytics", icon: BookText },
     { name: "Messages", path: "/instructor/messages", icon: MessageCircleMore },
     { name: "Settings", path: "/instructor/settings", icon: Settings },
   ];
@@ -76,17 +115,17 @@ const InstructorLayout = () => {
           <div className="text-base font-semibold flex gap-2 items-center">
             <div className="flex items-center justify-center bg-green-200 rounded-lg w-12 h-12 overflow-hidden">
               <img
-                src={profileImg}
+                src={profile.profilePic}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div>
-              <div>Jamsheer</div>
-              <div>UI & UX Designer</div>
+            <div className=" flex flex-col items-start">
+              <div>{profile.name}</div>
+              <div>{profile.profession}</div>
             </div>
           </div>
-          <div className="bg-green-100 flex items-center p-4 rounded-md">
+          <div className="bg-green-100 flex items-center p-4 rounded-md text-green-500">
             <Bell />
           </div>
         </header>

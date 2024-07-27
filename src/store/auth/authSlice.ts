@@ -12,7 +12,7 @@ interface UserData {
   firstName: string;
 }
 
-interface AuthState {
+export interface AuthState {
   token: string | null;
   name: string;
   email: string;
@@ -80,6 +80,7 @@ const authSlice = createSlice({
             state.isVerified = user.isVerified;
             state.registerStatus = "success";
             state.firstName = user.firstName;
+            state.registerError = "";
           }
         }
       )
@@ -103,13 +104,11 @@ const authSlice = createSlice({
           state.loginStatus = "success";
           state.registerError = "";
           state.firstName = user.firstName;
-          toast.success("login sucessfully");
         }
       })
       .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
         state.loginStatus = "rejected";
         state.loginError = action.payload;
-        toast.error(action.payload.error);
       })
       .addCase(verifyOtp.pending, (state) => {
         state.loginStatus = "pending";

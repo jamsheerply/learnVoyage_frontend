@@ -8,7 +8,7 @@ interface UserData {
   isBlocked?: boolean;
 }
 
-const baseURL = `${import.meta.env.VITE_BASE_URL}/users`;
+const baseURL = `${import.meta.env.VITE_BASE_URL}/users/instructor`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
@@ -16,9 +16,9 @@ export const api: AxiosInstance = axios.create({
 });
 
 export const getAllInstructorsApi = () => {
-  return api.get("/instructors");
+  return api.get("/");
 };
 
 export const editInstructorApi = (userData: UserData) => {
-  return api.patch("/instructor/edit", userData);
+  return api.patch("/edit", userData);
 };

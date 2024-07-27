@@ -1,9 +1,11 @@
+import { userEntity } from "@/types/userEntity";
+import { userProfileEntity } from "@/types/userProfileEntity";
 import axios, { AxiosInstance } from "axios";
 
 interface UserData {
   [key: string]: string | number;
 }
-const baseURL = `${import.meta.env.VITE_BASE_URL}/users`;
+const baseURL = `${import.meta.env.VITE_BASE_URL}/users/auth`;
 
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
@@ -29,4 +31,12 @@ export const isBlockedApi = (id: string) => {
 };
 export const logoutApi = () => {
   return api.get("/logout");
+};
+
+export const getProfileByIdApi = (id: string) => {
+  return api.get(`/profile/${id}`);
+};
+
+export const updateProfileApi = (userData: userProfileEntity) => {
+  return api.patch("/update-profile", userData);
 };

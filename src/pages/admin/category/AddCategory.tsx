@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import FileUpload, { UploadedFile } from "../../../components/FileUpload";
+import FileUpload, {
+  UploadedFile,
+} from "../../../components/admin/category/FileUpload";
 import PacmanLoader from "react-spinners/PacmanLoader";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -10,7 +12,7 @@ import {
   updateCategory,
 } from "../../../store/category/CategoryActions";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 
 interface Category {
   categoryName: string;
@@ -20,7 +22,7 @@ interface Category {
 }
 
 const AddCategory: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const categorySelector = useSelector((state: RootState) => state.category);
   const [category, setCategory] = useState<Category>({
     categoryName: "",
@@ -124,7 +126,7 @@ const AddCategory: React.FC = () => {
         image: fileUrls[0] || "",
       };
 
-      await dispatch(updateCategory(categoryData) as any);
+      await dispatch(updateCategory(categoryData));
 
       if (categorySelector.error) {
         toast.error(categorySelector.error.error);

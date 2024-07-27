@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Modal from "./Modal";
+import Modal from "../../instructor/courses/Modal";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
-import { editInstructor } from "../store/Instructors/InstructorsActions";
+import { AppDispatch } from "../../../store/store";
+import { editInstructor } from "../../../store/Instructors/InstructorsActions";
 
 interface TableData {
   firstName: string;

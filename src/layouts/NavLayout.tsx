@@ -1,16 +1,16 @@
-import React from "react";
-import { Bell, Grip } from "lucide-react";
+import React, { useState } from "react";
+import { Bell, Grip, X } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Logo } from "../components/Logo";
+import { Logo } from "../components/public/auth/Logo";
 import { useDispatch, useSelector } from "react-redux";
 import profileImg from "../assets/profilePic.svg";
 import { logoutUser } from "../store/auth/authActions";
-import { AppDispatch, RootState } from "../store/store"; // Ensure you import AppDispatch and RootState types
+import { AppDispatch, RootState } from "../store/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
+  // DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
@@ -20,114 +20,164 @@ const NavLayout = () => {
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
-  console.log(location.pathname);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleDashboardNavigation = () => {
-    if (auth.role === "student") {
-      navigate("/student/overview");
-    } else if (auth.role === "instructor") {
-      navigate("/instructor/overview");
-    } else if (auth.role === "admin") {
-      navigate("/admin/overview");
+    if (auth.userId) {
+      if (auth.role === "student") {
+        navigate("/student/overview");
+      } else if (auth.role === "instructor") {
+        navigate("/instructor/overview");
+      } else if (auth.role === "admin") {
+        navigate("/admin/overview");
+      }
     }
   };
 
+  const navItems = [
+    { path: "/", label: "Home" },
+    { path: "/course", label: "Course" },
+    { path: "/tech", label: "Tech" },
+    { path: "/mentors", label: "Mentors" },
+    { path: "/about", label: "About Us" },
+  ];
+
   return (
     <>
-      <div className="flex justify-between items-center p-6 lg:px-[90px] cursor-pointer">
-        <div className="flex items-center space-x-4">
-          <Logo />
-        </div>
-        <div className="lg:block hidden">
-          <ul className="flex gap-5 font-bold text-green-600">
-            <li
-              className={`p-2 rounded-md ${
-                location.pathname === "/" ? "bg-green-100" : "bg-gray-50"
-              }`}
-            >
-              <Link to="/">Home</Link>
-            </li>
-            <li
-              className={`p-2 rounded-md ${
-                location.pathname === "/course" ? "bg-green-100" : "bg-gray-50"
-              }`}
-            >
-              <Link to="/course">Course</Link>
-            </li>
-            <li
-              className={`p-2 rounded-md ${
-                location.pathname === "/tech" ? "bg-green-100" : "bg-gray-50"
-              }`}
-            >
-              <Link to="/tech">Tech</Link>
-            </li>
-            <li className="bg-gray-50 p-2 rounded-md">Contact Us</li>
-            <li className="bg-gray-50 p-2 rounded-md">About Us</li>
-          </ul>
-        </div>
-
-        <div className="flex gap-2">
-          <div className="text-green-600 font-bold bg-green-100 rounded-md px-3 py-1 text-1xl h-10">
-            {auth.userId ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className="text-base font-semibold flex gap-2 items-center">
-                    <div className="flex items-center justify-center bg-green-200 rounded-lg size-8 overflow-hidden">
-                      <img
-                        src={profileImg}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>{auth.firstName}</div>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleDashboardNavigation}>
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      dispatch(logoutUser());
-                    }}
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link to="/student-auth/signin">Login</Link>
-            )}
-          </div>
-
-          <div className="lucideBell bg-green-100 flex items-center px-2 rounded-md">
-            <Bell />
-          </div>
-          <DropdownMenu>
-            <div className="lucideBell bg-green-100 flex items-center px-2 rounded-md lg:hidden">
-              <DropdownMenuTrigger>
-                <Grip />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to="/">Home</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/course">Course</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/tech">Tech</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>Contact Us</DropdownMenuItem>
-                <DropdownMenuItem>About Us</DropdownMenuItem>
-              </DropdownMenuContent>
+      <nav className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Logo />
             </div>
-          </DropdownMenu>
+
+            {/* Desktop menu */}
+            <div className="hidden md:flex items-center">
+              <ul className="flex space-x-4">
+                {navItems.map((item) => (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`px-3 py-2 rounded-md text-sm font-medium ${
+                        location.pathname === item.path
+                          ? "bg-green-100 text-green-600"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                {auth.userId ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="bg-green-100 text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src={profileImg}
+                          alt="Profile"
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span>{auth.firstName}</span>
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleDashboardNavigation}>
+                        Dashboard
+                      </DropdownMenuItem>
+
+                      {auth.role === "student" && (
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate("/student/enrollments");
+                            }}
+                          >
+                            Enrollments
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate("/student/exams");
+                            }}
+                          >
+                            Exams
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate("/student/messages");
+                            }}
+                          >
+                            Messages
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate("/student/settings");
+                            }}
+                          >
+                            Settings
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      <DropdownMenuItem
+                        onClick={() => {
+                          dispatch(logoutUser());
+                        }}
+                      >
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link
+                    to="/student-auth/signin"
+                    className="bg-green-100 text-green-600 px-3 py-2 rounded-md text-sm font-medium"
+                  >
+                    Login
+                  </Link>
+                )}
+              </div>
+              <button className="ml-4 bg-green-100 p-2 rounded-md text-green-500">
+                <Bell size={20} />
+              </button>
+              <div className="ml-4 md:hidden">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="bg-green-100 p-2 rounded-md text-green-500"
+                >
+                  {isMenuOpen ? <X size={20} /> : <Grip size={20} />}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* Mobile menu */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    location.pathname === item.path
+                      ? "bg-green-100 text-green-600"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
       <Outlet />
     </>
   );

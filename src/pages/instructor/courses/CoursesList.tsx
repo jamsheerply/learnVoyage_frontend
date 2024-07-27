@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
 import { getAllCoursesList } from "../../../store/course/coursesActions";
-import SomeWentWrong from "../../../components/SomeWentWrong";
+import SomeWentWrong from "../../../components/public/common/SomeWentWrong";
 import "react-loading-skeleton/dist/skeleton.css";
 import CourseCardSkeleton from "../../../components/instructor/courses/CourseCardSkeleton";
 
