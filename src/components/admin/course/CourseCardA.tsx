@@ -23,7 +23,7 @@ const CourseCardA = ({ courseData }: CourseCardProps) => {
   const { categories } = useSelector((state: RootState) => state.category);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8 cursor-pointer ">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-4 cursor-pointer ">
       {courseData.map((course) => (
         <div
           key={course.id}

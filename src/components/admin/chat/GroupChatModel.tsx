@@ -28,6 +28,8 @@ interface GroupChatModelProps {
 interface User {
   _id: string;
   name: string;
+  email: string;
+  pic: string;
 }
 
 const GroupChatModel: React.FC<GroupChatModelProps> = ({ children }) => {
@@ -109,14 +111,15 @@ const GroupChatModel: React.FC<GroupChatModelProps> = ({ children }) => {
       console.log(JSON.stringify(response.data.data));
       onClose(); // Close the modal after successful submission
     } catch (error) {
-      toast({
-        title: "Failed to Create the Chat!",
-        description: error.response?.data || "Unknown error occurred",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
+      if (typeof error.response.data === "string")
+        toast({
+          title: "Failed to Create the Chat!",
+          description: error.response?.data || "Unknown error occurred",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
     }
   };
 

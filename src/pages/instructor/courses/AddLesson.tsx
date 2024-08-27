@@ -1,25 +1,34 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {
-  CourseWithLesson,
-  Lesson,
-  updateCourse,
-} from "../../../store/course/coursesActions";
+import { updateCourse } from "../../../store/course/coursesActions";
 import { AppDispatch } from "../../../store/store";
 import toast from "react-hot-toast";
+import { ICourse, ILessonContent } from "@/types/course.entity";
 
 interface ErrorState {
   [key: number]: {
     title?: string;
     description?: string;
-    videoUrl?: string;
+    video?: string;
   };
+}
+
+interface VideoData {
+  publicId: string;
+  version: string;
+  secure_url: string;
+}
+
+interface Lesson {
+  lessonId: number;
+  title: string;
+  description: string;
+  video: { publicId: string; version: string } | null;
 }
 
 const lessonSchema = Yup.object().shape({
@@ -31,18 +40,21 @@ const lessonSchema = Yup.object().shape({
     .required("Description is required")
     .min(10, "Description must be at least 10 characters long")
     .max(500, "Description cannot exceed 500 characters"),
-  videoUrl: Yup.string()
-    .required("Video  is required")
-    .url("Invalid URL format"),
+  video: Yup.object()
+    .shape({
+      publicId: Yup.string().required("Video is required"),
+      version: Yup.string().required("Video is required"),
+    })
+    .nullable(),
 });
 
-export const AddLesson = () => {
+const AddLesson = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
   const [lessons, setLessons] = useState<Lesson[]>([
-    { lessonId: Date.now(), title: "", description: "", videoUrl: null },
+    { lessonId: Date.now(), title: "", description: "", video: null },
   ]);
 
   const [uploadingLessonId, setUploadingLessonId] = useState<number | null>(
@@ -51,53 +63,28 @@ export const AddLesson = () => {
 
   const [errors, setErrors] = useState<ErrorState>({});
 
-  const uploadFile = async (video: File): Promise<string | void> => {
-    const sliceSize = 6000000;
-    const cloudName = import.meta.env.VITE_CLOUD_NAME;
-    const uploadPreset = "videos_preset";
-    const uniqueUploadId = +new Date();
-
-    let start = 0;
-    const size = video.size;
-
-    const uploadChunk = async (start: number, end: number) => {
-      const formData = new FormData();
-      const chunk = video.slice(start, end);
-      formData.append("file", chunk);
-      formData.append("upload_preset", uploadPreset);
-      formData.append("cloud_name", cloudName);
-
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`,
-        formData,
-        {
-          headers: {
-            "X-Unique-Upload-Id": uniqueUploadId.toString(),
-            "Content-Range": `bytes ${start}-${end - 1}/${size}`,
-          },
-        }
-      );
-
-      return response.data.secure_url;
-    };
-
-    while (start < size) {
-      let end = start + sliceSize;
-      if (end > size) {
-        end = size;
-      }
-      const secureUrl = await uploadChunk(start, end);
-      if (end === size) {
-        return secureUrl;
-      }
-      start += sliceSize;
+  const uploadFile = async (video: File): Promise<VideoData> => {
+    const data = new FormData();
+    data.append("file", video);
+    data.append("upload_preset", "videos_preset");
+    try {
+      const cloudName = import.meta.env.VITE_CLOUD_NAME;
+      const api = `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`;
+      const res = await axios.post(api, data);
+      console.log("video", res.data);
+      const { public_id, version, secure_url } = res.data;
+      return { publicId: public_id, version: version.toString(), secure_url };
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      toast.error("Failed to upload video");
+      throw error;
     }
   };
 
   const handleAddLesson = () => {
     setLessons((prevLessons) => [
       ...prevLessons,
-      { lessonId: Date.now(), title: "", description: "", videoUrl: null },
+      { lessonId: Date.now(), title: "", description: "", video: null },
     ]);
   };
 
@@ -122,7 +109,9 @@ export const AddLesson = () => {
   ) => {
     setLessons((prevLessons) =>
       prevLessons.map((lesson) =>
-        lesson.lessonId === lessonId ? { ...lesson, [field]: value } : lesson
+        lesson.lessonId === lessonId
+          ? ({ ...lesson, [field]: value } as Lesson)
+          : lesson
       )
     );
   };
@@ -130,14 +119,35 @@ export const AddLesson = () => {
   const handleFileChange = async (lessonId: number, file: File | null) => {
     if (file) {
       setUploadingLessonId(lessonId);
-      const videoUrl = await uploadFile(file);
-      setUploadingLessonId(null);
-      handleInputChange(lessonId, "videoUrl", videoUrl as string);
+      try {
+        const videoData = await uploadFile(file);
+        setUploadingLessonId(null);
+        setLessons((prevLessons) =>
+          prevLessons.map((lesson) =>
+            lesson.lessonId === lessonId
+              ? {
+                  ...lesson,
+                  video: {
+                    publicId: videoData.publicId,
+                    version: videoData.version,
+                  },
+                }
+              : lesson
+          )
+        );
+      } catch (error) {
+        setUploadingLessonId(null);
+        console.error("Error handling file change:", error);
+      }
     }
   };
 
   const handleRemoveVideo = (lessonId: number) => {
-    handleInputChange(lessonId, "videoUrl", null);
+    setLessons((prevLessons) =>
+      prevLessons.map((lesson) =>
+        lesson.lessonId === lessonId ? { ...lesson, video: null } : lesson
+      )
+    );
     const videoInput = document.getElementById(
       `video-input-${lessonId}`
     ) as HTMLInputElement;
@@ -181,12 +191,24 @@ export const AddLesson = () => {
       return;
     }
 
-    const updatedCourse: CourseWithLesson = {
+    const transformedLessons: ILessonContent[] = lessonsToUpload
+      .filter((lesson) => lesson.video !== null)
+      .map((lesson, index) => ({
+        lessonId: lesson.lessonId,
+        lessonNumber: (index + 1).toString(),
+        lessonTitle: lesson.title,
+        description: lesson.description,
+        video: lesson.video!,
+      }));
+
+    const updatedCourse: Partial<ICourse> = {
+      // Change to Partial<ICourse>
       id: id!,
-      lessons: lessonsToUpload,
+      lessons: transformedLessons,
     };
+
     try {
-      await dispatch(updateCourse(updatedCourse));
+      await dispatch(updateCourse(updatedCourse as ICourse)); // Type assertion here
       if (!remove) {
         toast.success("lesson created successfully!");
         navigate("/instructor/courses");
@@ -195,6 +217,7 @@ export const AddLesson = () => {
       console.error("Failed to update course:", error);
     }
   };
+
   return (
     <div className="px-20">
       {lessons.map((lesson) => (
@@ -202,10 +225,14 @@ export const AddLesson = () => {
           <h1 className="mb-3">Lesson {lessons.indexOf(lesson) + 1}</h1>
           <div className="flex gap-6 h-60 rounded-md">
             <div className="border-2 border-gray-300 w-[40%] flex justify-center items-center relative">
-              {lesson.videoUrl ? (
+              {lesson.video ? (
                 <>
                   <video
-                    src={lesson.videoUrl}
+                    src={`https://res.cloudinary.com/${
+                      import.meta.env.VITE_CLOUD_NAME
+                    }/video/upload/v${lesson.video.version}/${
+                      lesson.video.publicId
+                    }.mp4`}
                     controls
                     className="w-full h-full object-cover"
                   />
@@ -242,9 +269,9 @@ export const AddLesson = () => {
                   />
                 </div>
               )}
-              {errors[lesson.lessonId]?.videoUrl && (
-                <p className="text-red-500 absolute bottom-0  p-2">
-                  {errors[lesson.lessonId]?.videoUrl}
+              {errors[lesson.lessonId]?.video && (
+                <p className="text-red-500 absolute bottom-0 p-2">
+                  {errors[lesson.lessonId]?.video}
                 </p>
               )}
             </div>
@@ -333,3 +360,5 @@ export const AddLesson = () => {
     </div>
   );
 };
+
+export default AddLesson;

@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Course } from "../../../store/course/coursesActions";
 import { useEffect } from "react";
 import { AppDispatch, RootState } from "../../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { readAllCategory } from "../../../store/category/CategoryActions";
+import { ICourse } from "@/types/course.entity";
 
 interface CourseCardProps {
-  courseData: Course[];
+  courseData: ICourse[];
 }
 
 const CourseCard = ({ courseData }: CourseCardProps) => {
@@ -24,13 +24,13 @@ const CourseCard = ({ courseData }: CourseCardProps) => {
   const { userId } = useSelector((state: RootState) => state.auth);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4 py-8 cursor-pointer">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-10  cursor-pointer">
       {courseData.map(
         (course) =>
           userId === course.mentorId && (
             <div
               key={course.id}
-              className="rounded-xl shadow-lg p-4 bg-white"
+              className="rounded-xl shadow-lg p-4 bg-zinc-100"
               onClick={() => {
                 navigate(`/instructor/edit-course/${course.id}`);
               }}

@@ -28,7 +28,7 @@ import EditCategory from "./pages/admin/category/EditCategory";
 import UnderConstrution from "./components/public/common/UnderConstruction";
 import CoursesList from "./pages/instructor/courses/CoursesList";
 import CreateCourse from "./pages/instructor/courses/CreateCourse";
-import { AddLesson } from "./pages/instructor/courses/AddLesson";
+import AddLesson from "./pages/instructor/courses/AddLesson";
 import { SkeletonTheme } from "react-loading-skeleton";
 import EditCourse from "./pages/instructor/courses/EditCourse";
 import EditLesson from "./pages/instructor/courses/EditLesson";
@@ -49,6 +49,15 @@ import MentorDetails from "./pages/public/mentor/MentorDetails";
 import VideoList from "./pages/public/VideoList";
 import SingleVideo from "./pages/public/SingleVideo";
 import VideoUpload from "./pages/public/VideoUpload";
+import Dashboard from "./pages/instructor/overview/dashboard";
+import DashboardStudent from "./pages/student/overview/DashboardStudent";
+import AdminDashboard from "./pages/admin/overview/AdminDashboard";
+import AssessmentsAdmin from "./pages/admin/assessments/AssessmentsAdmin";
+import ExamsList from "./pages/student/exams/Exams";
+import InstructorExams from "./pages/instructor/assessments/InstructorExams";
+import CreateNewExam from "./pages/instructor/assessments/CreateNewExam";
+import InstructorProfile from "./pages/public/instructor/InstructorProfile";
+import EditExam from "./pages/instructor/assessments/EditExam";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -61,6 +70,8 @@ const router = createBrowserRouter(
         <Route path="payment-success" element={<CoursePaymentSuccess />} />
         <Route path="payment-failed" element={<CoursePaymentFailed />} />
         <Route path="mentors" element={<MentorGrid />} />
+        <Route path="mentor-profile" element={<InstructorProfile />} />
+
         <Route path="mentor-details/:id" element={<MentorDetails />} />
 
         {/* video test */}
@@ -88,10 +99,10 @@ const router = createBrowserRouter(
           </StudentAuth>
         }
       >
-        <Route path="overview" element={<UnderConstrution />} />
+        <Route path="overview" element={<DashboardStudent />} />
         <Route path="enrollments" element={<EnrollmentList />} />
         <Route path="enrollments/:id" element={<EnrollmentListDetail />} />
-        <Route path="exams" element={<UnderConstrution />} />
+        <Route path="exams" element={<ExamsList />} />
         <Route path="chat" element={<UnderConstrution />} />
         <Route path="messages" element={<Chat />} />
         <Route path="settings" element={<StudentProfile />} />
@@ -105,14 +116,16 @@ const router = createBrowserRouter(
           </InstructorAuth>
         }
       >
-        <Route path="overview" element={<UnderConstrution />} />
+        <Route path="overview" element={<Dashboard />} />
         <Route path="courses" element={<CoursesList />} />
         <Route path="create-course" element={<CreateCourse />} />
         <Route path="add-lesson/:id" element={<AddLesson />} />
         <Route path="edit-course/:id" element={<EditCourse />} />
         <Route path="edit-lesson/:id" element={<EditLesson />} />
+        <Route path="exams" element={<InstructorExams />} />
+        <Route path="create-exam" element={<CreateNewExam />} />
+        <Route path="edit-exam/:id" element={<EditExam />} />
         <Route path="analytics" element={<Analytics />} />
-        <Route path="exams" element={<UnderConstrution />} />
         <Route path="messages" element={<Chat />} />
         <Route path="settings" element={<StudentProfile />} />
       </Route>
@@ -125,11 +138,12 @@ const router = createBrowserRouter(
           </AdminAuth>
         }
       >
-        <Route path="overview" element={<UnderConstrution />} />
+        <Route path="overview" element={<AdminDashboard />} />
         <Route path="categories" element={<Categories />} />
         <Route path="add-category" element={<AddCategory />} />
         <Route path="edit-category/:id" element={<EditCategory />} />
-        <Route path="course" element={<CourseListA />} />
+        <Route path="courses" element={<CourseListA />} />
+        <Route path="assessments" element={<AssessmentsAdmin />} />
         <Route path="profile" element={<Profile />} />
         <Route path="instructors" element={<InstructorList />} />
         <Route path="transactions" element={<Transactions />} />

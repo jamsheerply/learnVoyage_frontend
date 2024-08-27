@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { EDIT_INSTRUCTOR, GET_ALL_INSTRUCTORS } from "./types";
 import { editInstructorApi, getAllInstructorsApi } from "../api/InstructorApi";
 import { handleAxiosError } from "@/utils.ts/HandleAxiosError";
 
@@ -20,7 +19,7 @@ export const getAllInstructorsList = createAsyncThunk<
   Instructor[],
   void,
   { rejectValue: string }
->(GET_ALL_INSTRUCTORS, async (_, { rejectWithValue }) => {
+>("admin / instructors", async (_, { rejectWithValue }) => {
   try {
     const response = await getAllInstructorsApi();
     return response.data.data;
@@ -34,7 +33,7 @@ export const editInstructor = createAsyncThunk<
   Instructor[],
   EditInstructorParams,
   { rejectValue: string }
->(EDIT_INSTRUCTOR, async (values, { rejectWithValue }) => {
+>("admin/instructor/edit", async (values, { rejectWithValue }) => {
   try {
     const response = await editInstructorApi(values);
     console.log(JSON.stringify(response));

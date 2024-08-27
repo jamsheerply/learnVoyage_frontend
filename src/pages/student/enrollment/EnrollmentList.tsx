@@ -1,5 +1,6 @@
 import CourseFilter from "@/components/public/course/CourseFilter";
 import EnrollmentCourseCard from "@/components/student/enrollment/EnrollmentCourseCard";
+import { useDebounce } from "@/custom Hooks/hooks";
 import { Input } from "@/shadcn/ui/input";
 import {
   Pagination,
@@ -32,6 +33,7 @@ function EnrollmentList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(4);
   const [total, setTotal] = useState<number>(0);
@@ -104,7 +106,7 @@ function EnrollmentList() {
         params: {
           page,
           limit,
-          search: searchTerm || "",
+          search: debouncedSearch || "",
           category:
             selectedCategoryIds.length > 0
               ? selectedCategoryIds.join(",")
@@ -116,7 +118,6 @@ function EnrollmentList() {
       });
 
       setEnrollment(response.data.data.enrollments);
-      console.log(JSON.stringify(response.data.data.enrollments));
       setTotal(response.data.data.total);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -128,7 +129,7 @@ function EnrollmentList() {
   }, [
     page,
     limit,
-    searchTerm,
+    debouncedSearch,
     selectedCategories,
     selectedInstructors,
     selectedPrices,

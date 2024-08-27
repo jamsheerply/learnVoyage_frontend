@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { Course } from "../course/coursesActions";
+import { ICourse } from "@/types/course.entity";
 
 export const baseURLCourse = `${
   import.meta.env.VITE_BASE_URL
@@ -14,11 +14,11 @@ export const getAllCourseApi = () => {
   return api.get("/read");
 };
 
-export const createCourseApi = (courseData: Course) => {
+export const createCourseApi = (courseData: ICourse) => {
   return api.post("/create", courseData);
 };
 
-export const updatedCourseApi = (courseData: Course) => {
+export const updatedCourseApi = (courseData: ICourse) => {
   return api.patch("/update", courseData);
 };
 

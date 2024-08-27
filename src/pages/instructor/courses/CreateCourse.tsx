@@ -1,22 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ClipLoader from "react-spinners/ClipLoader";
 import * as Yup from "yup";
-import { Course, createCourse } from "../../../store/course/coursesActions";
+import { createCourse } from "../../../store/course/coursesActions";
 import { AppDispatch, RootState } from "../../../store/store";
 import { readAllCategory } from "../../../store/category/CategoryActions";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { CustomError } from "@/utils.ts/customError";
+import { ICourse } from "@/types/course.entity";
+
+interface Category {
+  id: string;
+  categoryName: string;
+  isBlocked: boolean;
+  image: string;
+}
+
+interface ResponseData {
+  success?: string;
+  error?: string;
+  id?: string;
+}
 
 const CreateCourse: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  // const dispatch: () => AppDispatch = useDispatch;
   const navigate = useNavigate();
 
-  // Select category data from Redux store
   useEffect(() => {
     dispatch(readAllCategory());
   }, [dispatch]);
@@ -24,29 +36,33 @@ const CreateCourse: React.FC = () => {
   const { categories } = useSelector((state: RootState) => state.category);
   const { userId } = useSelector((state: RootState) => state.auth);
 
-  // Initial course state setup
-  const [course, setCourse] = useState<Course>({
+  const [course, setCourse] = useState<ICourse>({
     courseName: "",
     mentorId: userId,
     categoryId: "",
     description: "",
     language: "",
     coursePrice: 0,
-    courseDemoVideoUrl: "",
+    courseDemoVideo: {
+      publicId: "",
+      version: "",
+    },
     courseThumbnailUrl: "",
     lessons: [],
     id: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Course>>({});
+  const [errors, setErrors] = useState<Partial<ICourse>>({});
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [videoLoading, setVideoLoading] = useState<boolean>(false);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
-  // File upload function
   const uploadFile = async (
     file: File,
     type: "image" | "video"
-  ): Promise<string | void> => {
+  ): Promise<
+    string | { publicId: string; version: string; secure_url: string }
+  > => {
     const data = new FormData();
     data.append("file", file);
     data.append(
@@ -58,11 +74,20 @@ const CreateCourse: React.FC = () => {
       const resourceType = type === "image" ? "image" : "video";
       const api = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
       const res = await axios.post(api, data);
-      const { secure_url } = res.data;
-      return secure_url;
-    } catch (error: any) {
+      if (type === "image") {
+        console.log("image", res.data);
+        const { secure_url } = res.data;
+        return secure_url;
+      } else {
+        console.log("video", res.data);
+        const { public_id, version, secure_url } = res.data;
+        return { publicId: public_id, version: version.toString(), secure_url };
+      }
+    } catch (error) {
+      const err = error as CustomError;
       console.error("Error uploading file:", error);
-      toast.error(error.message);
+      toast.error(err.message);
+      throw error;
     }
   };
 
@@ -70,12 +95,17 @@ const CreateCourse: React.FC = () => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setImageLoading(true);
-      const imgUrl = await uploadFile(file, "image");
-      setImageLoading(false);
-      setCourse((prevCourse) => ({
-        ...prevCourse,
-        courseThumbnailUrl: imgUrl as string,
-      }));
+      try {
+        const imgUrl = await uploadFile(file, "image");
+        setImageLoading(false);
+        setCourse((prevCourse: ICourse) => ({
+          ...prevCourse,
+          courseThumbnailUrl: imgUrl as string,
+        }));
+      } catch (error) {
+        setImageLoading(false);
+        console.error("Error handling image change:", error);
+      }
     }
   };
 
@@ -83,17 +113,30 @@ const CreateCourse: React.FC = () => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       setVideoLoading(true);
-      const videoUrl = await uploadFile(file, "video");
-      setVideoLoading(false);
-      setCourse((prevCourse) => ({
-        ...prevCourse,
-        courseDemoVideoUrl: videoUrl as string,
-      }));
+      try {
+        const videoData = (await uploadFile(file, "video")) as {
+          publicId: string;
+          version: string;
+          secure_url: string;
+        };
+        setVideoLoading(false);
+        setCourse((prevCourse: ICourse) => ({
+          ...prevCourse,
+          courseDemoVideo: {
+            publicId: videoData.publicId,
+            version: videoData.version,
+          },
+        }));
+        setVideoPreview(videoData.secure_url);
+      } catch (error) {
+        setVideoLoading(false);
+        console.error("Error handling video change:", error);
+      }
     }
   };
 
   const removeImage = () => {
-    setCourse((prevCourse) => ({
+    setCourse((prevCourse: ICourse) => ({
       ...prevCourse,
       courseThumbnailUrl: "",
     }));
@@ -104,17 +147,20 @@ const CreateCourse: React.FC = () => {
   };
 
   const removeVideo = () => {
-    setCourse((prevCourse) => ({
+    setCourse((prevCourse: ICourse) => ({
       ...prevCourse,
-      courseDemoVideoUrl: "",
+      courseDemoVideo: {
+        publicId: "",
+        version: "",
+      },
     }));
+    setVideoPreview(null);
     const videoInput = document.getElementById("video") as HTMLInputElement;
     if (videoInput) {
       videoInput.value = "";
     }
   };
 
-  // Validation schema
   const schema = Yup.object().shape({
     courseName: Yup.string()
       .required("Course name is required")
@@ -129,16 +175,12 @@ const CreateCourse: React.FC = () => {
       .required("Price is required")
       .min(0, "Price must be a positive number"),
     courseThumbnailUrl: Yup.string().required("Course Thumbnail is required"),
-    courseDemoVideoUrl: Yup.string().required("Course Demo is required"),
+    courseDemoVideo: Yup.object().shape({
+      publicId: Yup.string().required("Course Demo Video is required"),
+      version: Yup.string().required("Course Demo Video is required"),
+    }),
   });
 
-  interface ResponseData {
-    success?: string;
-    error?: string;
-    id?: string;
-  }
-
-  // Form submission handler
   const handleSubmit = async () => {
     try {
       await schema.validate(course, { abortEarly: false });
@@ -153,17 +195,20 @@ const CreateCourse: React.FC = () => {
         toast.error(createdCourse.error || "Failed to create the course");
       }
     } catch (validationErrors) {
-      const validationErrorsObj: Partial<Course> = {};
-      (validationErrors as Yup.ValidationError).inner.forEach((error: any) => {
-        validationErrorsObj[error.path as keyof Course] = error.message;
-      });
+      const validationErrorsObj: Partial<any> = {};
+      (validationErrors as Yup.ValidationError).inner.forEach(
+        (error: Yup.ValidationError) => {
+          if (error.path) {
+            validationErrorsObj[error.path as keyof ICourse] = error.message;
+          }
+        }
+      );
       setErrors(validationErrorsObj);
       console.error("Validation errors:", validationErrors);
     }
   };
 
-  // Format categories for dropdown
-  const formattedCategories = categories.map((category) => ({
+  const formattedCategories: Category[] = categories.map((category) => ({
     id: category.id,
     categoryName: category.categoryName,
     isBlocked: category.isBlocked,
@@ -219,18 +264,18 @@ const CreateCourse: React.FC = () => {
                 type="file"
                 accept="video/*"
                 id="video"
-                key={course.courseDemoVideoUrl ? "video-loaded" : "video-empty"} // Force re-render
+                key={videoPreview ? "video-loaded" : "video-empty"}
                 className={`absolute inset-0 w-full h-full opacity-0 cursor-pointer ${
-                  course.courseDemoVideoUrl ? "hidden" : ""
+                  videoPreview ? "hidden" : ""
                 }`}
                 onChange={handleVideoChange}
               />
               {videoLoading ? (
                 <ClipLoader color="#36D7B7" />
-              ) : course.courseDemoVideoUrl ? (
+              ) : videoPreview ? (
                 <>
                   <video
-                    src={course.courseDemoVideoUrl}
+                    src={videoPreview}
                     controls
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -245,8 +290,8 @@ const CreateCourse: React.FC = () => {
                 <p>Click to select a video</p>
               )}
             </div>
-            {errors.courseDemoVideoUrl && (
-              <div className="text-red-500">{errors.courseDemoVideoUrl}</div>
+            {errors.courseDemoVideo && (
+              <div className="text-red-500">Course Demo Video is required</div>
             )}
           </div>
         </div>
@@ -346,7 +391,7 @@ const CreateCourse: React.FC = () => {
                 navigate("/instructor/courses");
               }}
             >
-              cancel
+              Cancel
             </button>
             <button
               className="border-2 p-2 my-2 w-36 rounded-lg border-green-500 text-green-500"

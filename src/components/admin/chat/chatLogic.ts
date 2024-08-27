@@ -1,5 +1,3 @@
-import { chatEntity } from "@/types/chatEntity";
-
 export const getSender = (loggedUser: string, users: any) => {
   return users[0]?._id === loggedUser ? users[1].name : users[0].name;
 };

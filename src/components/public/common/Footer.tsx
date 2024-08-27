@@ -1,12 +1,12 @@
 /* eslint-disable react/react-in-jsx-scope */
-
 import { Logo } from "../auth/Logo";
 import { SocialIcon } from "react-social-icons";
+
 const Footer = () => {
   return (
-    <div className="w-[88%]  mx-auto my-4">
-      <div className="flex justify-between">
-        <div className="">
+    <div className="w-[88%] mx-auto my-4">
+      <div className="flex flex-wrap justify-between gap-8">
+        <div className="w-full sm:w-auto">
           <Logo />
           <div className="flex gap-1 my-3">
             <SocialIcon network="twitter" style={{ height: 25, width: 25 }} />
@@ -18,7 +18,7 @@ const Footer = () => {
           <h6>Eduvi is a registered</h6>
           <h6>trademark of Eduvi.co</h6>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <h1 className="font-semibold text-xl my-2">Courses</h1>
           <h6>Classroom courses</h6>
           <h6>Virtual classroom courses</h6>
@@ -26,7 +26,7 @@ const Footer = () => {
           <h6>Video Courses</h6>
           <h6>offline Courses</h6>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <h1 className="font-semibold text-xl my-2">Community</h1>
           <h6>Learners</h6>
           <h6>Parteners</h6>
@@ -35,7 +35,7 @@ const Footer = () => {
           <h6>Blog</h6>
           <h6>Teaching Center</h6>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <h1 className="font-semibold text-xl my-2">Quick links</h1>
           <h6>Home</h6>
           <h6>Professional Education</h6>
@@ -44,7 +44,7 @@ const Footer = () => {
           <h6>Testimonial</h6>
           <h6>Programs</h6>
         </div>
-        <div>
+        <div className="w-full sm:w-auto">
           <h1 className="font-semibold text-xl my-2">More</h1>
           <h6>Press</h6>
           <h6>Investors </h6>
@@ -54,8 +54,8 @@ const Footer = () => {
           <h6>Contact</h6>
         </div>
       </div>
-      <div className="flex justify-between text-sm mt-2">
-        <div>Privacy Policy | Terms & Conditions</div>
+      <div className="flex flex-col sm:flex-row justify-between text-sm mt-8">
+        <div className="mb-2 sm:mb-0">Privacy Policy | Terms & Conditions</div>
         <div>All copyright &#169; 2022 Reserved</div>
       </div>
     </div>

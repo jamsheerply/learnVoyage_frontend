@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bell, Grip, X } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "../components/public/auth/Logo";
@@ -10,10 +10,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  // DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
+import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
+import { Badge } from "customizable-react-badges";
+import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
+import { getSender } from "@/components/admin/chat/chatLogic";
 
 const NavLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +24,19 @@ const NavLayout = () => {
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const { notifications } = useSelector((state: RootState) => state.chats);
+  const { userId } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleDashboardNavigation = () => {
     if (auth.userId) {
@@ -38,13 +54,15 @@ const NavLayout = () => {
     { path: "/", label: "Home" },
     { path: "/course", label: "Course" },
     { path: "/tech", label: "Tech" },
-    { path: "/mentors", label: "Mentors" },
-    { path: "/about", label: "About Us" },
   ];
 
   return (
-    <>
-      <nav className="bg-white shadow-md">
+    <div className="flex flex-col min-h-screen overflow-x-hidden">
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -141,9 +159,44 @@ const NavLayout = () => {
                   </Link>
                 )}
               </div>
-              <button className="ml-4 bg-green-100 p-2 rounded-md text-green-500">
-                <Bell size={20} />
-              </button>
+              <div className="flex justify-center items-center w-10 h-10 ml-2">
+                <Menu>
+                  <Badge
+                    content={notifications.length}
+                    verticalAlignment="top"
+                    horizontalAlignment="right"
+                    bgColor="skyblue"
+                    hideZero
+                  >
+                    <MenuButton>
+                      <Bell className="text-green-500 w-6 h-6" />
+                    </MenuButton>
+                    <MenuList pl={2}>
+                      {!notifications.length && " no new messages"}
+                      {notifications.map((notif) => (
+                        <MenuItem
+                          key={notif._id}
+                          onClick={async () => {
+                            await dispatch(SetselectedChat(notif.chat));
+                            await dispatch(
+                              setNotification(
+                                notifications.filter((n) => n !== notif)
+                              )
+                            );
+                          }}
+                        >
+                          {notif.chat.isGroupchat
+                            ? `New Message in ${notifications.chat.chatName}`
+                            : `New Message from ${getSender(
+                                userId,
+                                notif.chat.users
+                              )}`}
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </Badge>
+                </Menu>
+              </div>
               <div className="ml-4 md:hidden">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -178,8 +231,10 @@ const NavLayout = () => {
           </div>
         )}
       </nav>
-      <Outlet />
-    </>
+      <main className="flex-grow pt-16 w-full max-w-full">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

@@ -1,17 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  Course,
   CourseWithLesson,
   createCourse,
   getAllCoursesList,
   readByIdCourse,
 } from "./coursesActions";
+import { ICourse } from "@/types/course.entity";
 
 interface CourseState {
   total?: number;
   page?: number;
   limit?: number;
-  courses: Course[];
+  courses: ICourse[];
   course: CourseWithLesson | null;
   loading: boolean;
   error: string | null;
@@ -21,7 +21,7 @@ export interface PayloadActionProp {
   total?: number;
   page?: number;
   limit?: number;
-  courses: Course[];
+  courses: ICourse[];
 }
 
 const initialState: CourseState = {

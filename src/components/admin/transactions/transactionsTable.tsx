@@ -1,5 +1,10 @@
+import { readAllStudentApi } from "@/store/api/AuthApi";
+import { getAllCoursesList } from "@/store/course/coursesActions";
+import { AppDispatch, RootState } from "@/store/store";
 import { paymentEntity } from "@/types/paymentEntity";
-import React from "react";
+import { IUser } from "@/types/user.entity";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 interface TransactionsTableProps {
   transactions: paymentEntity[];
@@ -8,8 +13,69 @@ interface TransactionsTableProps {
 export const TransactionsTable: React.FC<TransactionsTableProps> = ({
   transactions,
 }) => {
-  console.log(JSON.stringify(transactions));
-  //[{"_id":"66a24241cff0ee6e79ea5949","userId":"668fd54adea48c7ae478ed62","courseId":"668642e4f571c5f721885acd","method":"card","status":"completed","amount":349,"createdAt":"2024-07-25T12:17:05.644Z","__v":0},{"_id":"66a243df3448068e9b9d1384","userId":"668fd573dea48c7ae478ed6a","courseId":"668642e4f571c5f721885acd","method":"card","status":"completed","amount":349,"createdAt":"2024-07-25T12:23:59.545Z","__v":0}]
+  const [student, setStudent] = useState<IUser[] | null>([]);
+  const dispatch: AppDispatch = useDispatch();
+
+  // Select category data from Redux store
+  const { courses } = useSelector((state: RootState) => state.courses);
+
+  // console.log("courses", JSON.stringify(courses));
+
+  // console.log("transactions", JSON.stringify(transactions));
+  const findCourseInfo = (transaction, courses, infoType) => {
+    const course = courses.find((c) => c._id === transaction.courseId);
+
+    console.log("course", course);
+    if (!course) {
+      return null;
+    }
+    switch (infoType) {
+      case "courseName":
+        return course.courseName;
+      case "mentorId":
+        return course.mentorId;
+      case "full":
+        return {
+          courseName: course.courseName,
+          mentorId: course.mentorId,
+        };
+      default:
+        return course.courseName;
+    }
+  };
+  useEffect(() => {}, [courses]);
+
+  // Fetch all courses on component mount
+  useEffect(() => {
+    dispatch(getAllCoursesList());
+  }, [dispatch]);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const studentResponse = await readAllStudentApi();
+
+      setStudent(studentResponse.data.data);
+    };
+    fetchUser();
+  }, []);
+
+  const findStudentInfo = (
+    userId: string,
+    students: IUser[],
+    infoType = "full"
+  ) => {
+    const student = students.find((s) => s._id === userId);
+
+    if (!student) {
+      return null;
+    }
+
+    switch (infoType) {
+      case "full":
+      default:
+        return `${student.firstName} ${student.lastName}`;
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow overflow-x-auto">
       {transactions.length ? (
@@ -36,14 +102,23 @@ export const TransactionsTable: React.FC<TransactionsTableProps> = ({
                       className="w-16 h-12 object-cover rounded"
                     />
                     <div>
-                      <p className="text-sm">React js</p>
+                      <p className="text-sm">
+                        {findCourseInfo(
+                          transaction.courseId,
+                          courses,
+                          "courseName"
+                        )}
+                        reactjs
+                      </p>
                       <div className="text-sm text-gray-500">
                         by instructor 01
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">student 01</td>
+                <td className="px-6 py-4">
+                  {findStudentInfo(transaction.userId, student, "full")}
+                </td>
                 <td className="px-6 py-4">₹{transaction.amount}</td>
                 <td className="px-6 py-4">
                   <span className="px-2 py-1 bg-green-100 rounded">

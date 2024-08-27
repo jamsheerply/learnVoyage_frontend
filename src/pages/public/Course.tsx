@@ -20,6 +20,8 @@ import { Input } from "@/shadcn/ui/input";
 import axios from "axios";
 import { baseURLCourse } from "@/store/api/CourseApi";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDebounce } from "@/custom Hooks/hooks";
+import CourseCardSkeleton from "@/components/public/course/CourseCardSkeleton";
 
 const Course = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -27,6 +29,7 @@ const Course = () => {
   const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(5);
   const [total, setTotal] = useState<number>(0);
@@ -40,6 +43,8 @@ const Course = () => {
   const [selectedPrices, setSelectedPrices] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const [courseLoading, setCourseLoading] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(readAllCategory());
@@ -83,7 +88,7 @@ const Course = () => {
     fetchCourses();
   }, [
     page,
-    searchTerm,
+    debouncedSearch,
     selectedCategories,
     selectedInstructors,
     selectedPrices,
@@ -122,7 +127,7 @@ const Course = () => {
   const updateUrlParams = () => {
     const params = new URLSearchParams();
     params.set("page", String(page));
-    if (searchTerm) params.set("search", searchTerm);
+    if (searchTerm) params.set("search", debouncedSearch);
     const selectedCategoryKeys = Object.keys(selectedCategories).filter(
       (key) => selectedCategories[key]
     );
@@ -154,12 +159,12 @@ const Course = () => {
       const selectedPriceIds = Object.keys(selectedPrices).filter(
         (key) => selectedPrices[key]
       );
-
+      setCourseLoading(true);
       const response = await axios.get(`${baseURLCourse}/read`, {
         params: {
           page,
           limit,
-          search: searchTerm || "",
+          search: debouncedSearch || "",
           category:
             selectedCategoryIds.length > 0
               ? selectedCategoryIds.join(",")
@@ -169,7 +174,9 @@ const Course = () => {
             selectedPriceIds.length > 0 ? selectedPriceIds.join(",") : "All",
         },
       });
-
+      if (response.data.data.courses) {
+        setCourseLoading(false);
+      }
       setCourses(response.data.data.courses);
       console.log(JSON.stringify(response.data.data.courses));
       setTotal(response.data.data.total);
@@ -186,6 +193,8 @@ const Course = () => {
 
   return (
     <>
+      {/* White space */}
+      <div className="h-8 hidden lg:block"></div>
       <div>
         <div className="flex w-[88%] min-h-screen mx-auto py-2">
           <div className="w-full">
@@ -195,16 +204,16 @@ const Course = () => {
                 <Filter />
               </span>
             </div>
-            {courses.length === 0 ? (
-              <div className="text-center mt-20">
-                No courses available at the moment. Please try different filters
-                or check back later.
-              </div>
+            {courseLoading ? (
+              <CourseCardSkeleton />
+            ) : courses.length === 0 ? (
+              <div className="text-center mt-20">No courses available</div>
             ) : (
               courses.map((course) => (
                 <CourseCard key={course.id} course={course} />
               ))
             )}
+
             {total > limit && (
               <Pagination>
                 <PaginationContent>
