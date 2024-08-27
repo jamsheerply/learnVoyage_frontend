@@ -35,39 +35,35 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   );
   const categoryName = category ? category.categoryName : "Unknown Category";
 
-  console.log(JSON.stringify(categories));
-  console.log(JSON.stringify(course));
-
   return (
-    // {if course.length= 0 not thing to show try some other opetion}
-    <div className="flex lg:flex-row flex-col w-[80%] mt-4 lg:rounded-lg overflow-hidden border-2 border-gray-300 font-bold">
-      <div className="w-96 h-full overflow-hidden bg-green-500">
+    <div className="flex flex-col lg:flex-row w-full max-w-4xl h-64 mt-4 rounded-lg overflow-hidden border-2 border-gray-300 font-bold">
+      <div className="w-full lg:w-1/3 h-full overflow-hidden bg-gray-200">
         <img
-          className="w-full h-full"
+          className="w-full h-full object-cover"
           src={course.courseThumbnailUrl}
           alt="Course"
         />
       </div>
-      <div className="w-full p-2 flex flex-col justify-between gap-2">
+      <div className="w-full lg:w-2/3 p-4 flex flex-col justify-between">
         <div>
-          <h1>by {mentorName}</h1>
-          <h2>Name: {course.courseName}</h2>
-          <h2>Category: {categoryName}</h2>
-          <div className="flex gap-3">
-            <h5>{course.duration || "2"} week</h5>
-            <h5>{course.studentCount || 40} students</h5>
-            <h5>{course.level || "beginner"}</h5>
-            <h5>{course.lesson ? course.lesson.length : 0} Lessons</h5>
+          <h3 className="text-sm">by {mentorName}</h3>
+          <h2 className="text-lg font-semibold mt-1">{course.courseName}</h2>
+          <h3 className="text-sm mt-1">Category: {categoryName}</h3>
+          <div className="flex flex-wrap gap-3 mt-2 text-sm">
+            <span>{course.duration || "2"} week</span>
+            <span>{course.studentCount || 40} students</span>
+            <span>{course.level || "beginner"}</span>
+            <span>{course.lesson ? course.lesson.length : 0} Lessons</span>
           </div>
         </div>
-        <div className="flex justify-between border-t-2 border-gray-200 pt-2">
-          <h5>₹{course.coursePrice}</h5>
-          <h5
-            className="text-blue-500 cursor-pointer"
+        <div className="flex justify-between items-center border-t-2 border-gray-200 pt-2 mt-2">
+          <h3 className="text-lg font-semibold">₹{course.coursePrice}</h3>
+          <button
+            className="text-blue-500 hover:text-blue-700 transition-colors"
             onClick={() => navigate(`/course-details/${course.id}`)}
           >
             View more
-          </h5>
+          </button>
         </div>
       </div>
     </div>

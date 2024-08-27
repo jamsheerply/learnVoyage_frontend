@@ -1,6 +1,7 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { paymentUpdateApi } from "@/store/api/PaymentApi";
 import { paymentEntity } from "@/types/paymentEntity";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 function CoursePaymentFailed() {

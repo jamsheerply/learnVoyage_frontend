@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable react/react-in-jsx-scope */
+
 import { Box } from "@chakra-ui/layout";
 import SingleChat from "./SingleChat";
 import { useSelector } from "react-redux";

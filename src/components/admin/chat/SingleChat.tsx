@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { SetselectedChat } from "@/store/chat/chatsSlice";
+import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
 import { getSender, getSenderFull } from "./chatLogic";
 import ProfileModal from "./ProfileModal";
 import UpdateGroupChatModal from "./UpdateGroupChatModal";
@@ -21,6 +21,7 @@ import io, { Socket } from "socket.io-client";
 import Lottie from "react-lottie";
 import animationData from "./typing.json";
 import { chatEntity } from "@/types/chatEntity";
+import { fetchChats } from "@/store/chat/chatsActions";
 
 // Endpoint for the socket connection
 const ENDPOINT = import.meta.env.VITE_CHAT_URL;
@@ -63,7 +64,9 @@ function SingleChat() {
   }, []);
 
   // Redux hooks to access chat and auth state
-  const { chat } = useSelector((state: RootState) => state.chats);
+  const { chat, notifications } = useSelector(
+    (state: RootState) => state.chats
+  );
   const { userId } = useSelector((state: RootState) => state.auth);
   const dispatch: AppDispatch = useDispatch();
 
@@ -95,19 +98,31 @@ function SingleChat() {
     selectedChatCompare = chat;
   }, [chat?._id]);
 
-  // Handle incoming messages from the socket
   useEffect(() => {
-    socket.on("message received", (newMessageReceived: messageEntity) => {
+    const handleNewMessage = async (newMessageReceived: messageEntity) => {
       if (
         !selectedChatCompare ||
         selectedChatCompare._id !== newMessageReceived.chat._id
       ) {
-        console.log("notification");
+        if (!notifications.includes(newMessageReceived)) {
+          await dispatch(
+            setNotification([newMessageReceived, ...notifications])
+          );
+          await dispatch(fetchChats());
+        }
       } else {
         setMessages((prevMessages) => [...prevMessages, newMessageReceived]);
       }
-    });
-  });
+    };
+    console.log("notification", notifications);
+
+    socket.on("message received", handleNewMessage);
+
+    // Cleanup function to remove the listener when the component unmounts
+    return () => {
+      socket.off("message received", handleNewMessage);
+    };
+  }, [socket, selectedChatCompare, notifications, dispatch]);
 
   // Send a message when "Enter" key is pressed
   const sendMessage = async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -121,6 +136,7 @@ function SingleChat() {
         );
         socket.emit("new message", response.data.data);
         setMessages((prevMessages) => [...prevMessages, response.data.data]);
+        await dispatch(fetchChats());
       } catch (error) {
         toast({
           title: "Error Occured!",

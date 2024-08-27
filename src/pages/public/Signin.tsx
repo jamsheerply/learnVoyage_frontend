@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import signinImage from "../../assets/signinPage2.png";
 import { Link, useNavigate } from "react-router-dom";
 import InputForm from "../../components/public/auth/InputForm";
-import ButtonForm from "../../components/public/auth/ButtonForm";
+// import ButtonForm from "../../components/public/auth/ButtonForm";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../store/auth/authActions";
 import { RootState } from "@/store/store";
@@ -73,50 +73,50 @@ const Signin = () => {
   return (
     <div className="grid grid-cols-1 min-h-screen lg:grid-cols-2">
       <div className="w-full h-full flex items-center justify-center">
-        <div className="flex-col items-end w-[80%] p-2">
-          <div className="text-center font-bold text-3xl">
-            <h1>Login</h1>
+        <div className="w-[80%] max-w-md p-2">
+          <h1 className="text-center font-bold text-3xl mb-6">Login</h1>
+          <div className="w-full max-w-[350px] mx-auto">
+            {/* Adjust max-width here */}
+            <InputForm
+              placeholder="Email"
+              type="text"
+              tailwindIClass="mb-4"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              errorMsg={errors.email}
+            />
+            <InputForm
+              placeholder="Password"
+              type="password"
+              tailwindIClass="mb-6"
+              value={user.password}
+              onChange={(e) => setUser({ ...user, password: e.target.value })}
+              errorMsg={errors.password}
+            />
+            <button
+              className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition duration-300 mb-4"
+              onClick={handleSignin}
+            >
+              Sign In
+            </button>
           </div>
-          <InputForm
-            placeholder="Email"
-            type="text"
-            tailwindIClass="my-2"
-            value={user.email}
-            onChange={(e) => {
-              setUser({ ...user, email: e.target.value });
-            }}
-          />
-          {errors.email && (
-            <div className="text-red-500 mx-[125px]">{errors.email}</div>
-          )}
-          <InputForm
-            placeholder="Password"
-            type="password"
-            tailwindIClass="my-2"
-            value={user.password}
-            onChange={(e) => {
-              setUser({ ...user, password: e.target.value });
-            }}
-          />
-          {errors.password && (
-            <div className="text-red-500 mx-[125px]">{errors.password}</div>
-          )}
-          <ButtonForm
-            nameButton="Sign In"
-            tailwindBClass="my-2"
-            tailwindBBClass="bg-green-600 text-white"
-            onClick={handleSignin}
-          />
-          <div className="sm:px-[195px] lg:px-[130px] ">
-            Don't have an account,
-            <Link to="/student-auth/signup" className="text-blue-400">
+          <p className="text-center">
+            Don't have an account,{" "}
+            <Link
+              to="/student-auth/signup"
+              className="text-blue-500 hover:underline"
+            >
               Signup now ?
             </Link>
-          </div>
+          </p>
         </div>
       </div>
       <div className="w-full lg:block hidden">
-        <img src={signinImage} alt="Sign In" className="my-[60px]" />
+        <img
+          src={signinImage}
+          alt="Sign In"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );

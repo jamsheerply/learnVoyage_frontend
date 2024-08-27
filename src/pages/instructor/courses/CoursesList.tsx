@@ -19,7 +19,6 @@ const CoursesList = () => {
     (state: RootState) => state.courses
   );
 
-  console.log(JSON.stringify(courses));
   // Fetch all courses on component mount
   useEffect(() => {
     dispatch(getAllCoursesList());
@@ -34,7 +33,7 @@ const CoursesList = () => {
   return (
     <div>
       {/* Header section with title and create course button */}
-      <div className="flex justify-between p-2 px-20">
+      <div className="flex justify-between px-10 py-2">
         <div className="font-bold p-2 text-2xl">My Course</div>
         <div>
           <button

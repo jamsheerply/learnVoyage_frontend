@@ -7,6 +7,7 @@ import {
   renameGroupChat,
 } from "./chatsActions";
 import { chatEntity } from "@/types/chatEntity";
+import { messageEntity } from "@/types/messageEntity";
 
 // Define the shape of the state
 interface chatState {
@@ -14,6 +15,7 @@ interface chatState {
   chat: chatEntity | null;
   loading: boolean;
   error: string | null;
+  notifications: messageEntity[];
 }
 
 // Initial state
@@ -22,6 +24,7 @@ const initialState: chatState = {
   chat: null,
   loading: false,
   error: null,
+  notifications: [],
 };
 
 // Create the slice
@@ -29,13 +32,17 @@ const chatsSlice = createSlice({
   name: "chats",
   initialState,
   reducers: {
-    selectedChat(state, action: PayloadAction<chatEntity>) {
-      state.chat = JSON.parse(JSON.stringify(action.payload));
-      // console.log(JSON.stringify(action.payload));
+    selectedChat(state, action) {
+      state.chat = action.payload;
     },
-    SetselectedChat(state, action: PayloadAction<null>) {
-      state.chat = JSON.parse(JSON.stringify(action.payload));
-      // console.log(JSON.stringify(action.payload));
+    SetselectedChat(state, action) {
+      state.chat = action.payload;
+    },
+    // notification(state, action) {
+    //   state.notifications = action.payload;
+    // },
+    setNotification(state, action) {
+      state.notifications = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -48,7 +55,6 @@ const chatsSlice = createSlice({
         accessChat.fulfilled,
         (state, action: PayloadAction<chatEntity>) => {
           state.loading = false;
-          // state.chat = JSON.parse(JSON.stringify(action.payload));
           console.log(JSON.stringify(action.payload));
         }
       )
@@ -101,5 +107,10 @@ const chatsSlice = createSlice({
   },
 });
 
-export const { selectedChat, SetselectedChat } = chatsSlice.actions;
+export const {
+  selectedChat,
+  SetselectedChat,
+  // notification,
+  setNotification,
+} = chatsSlice.actions;
 export default chatsSlice.reducer;

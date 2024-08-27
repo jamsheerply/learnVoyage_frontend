@@ -19,10 +19,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
+import { useDebounce } from "@/custom Hooks/hooks";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
+
+const formatDate = (dateString: string): string => {
+  const date = parseISO(dateString);
+
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  if (isToday(date)) {
+    return format(date, "hh:mm a");
+  } else if (isYesterday(date)) {
+    return "yesterday";
+  } else {
+    return format(date, "dd-MM-yy");
+  }
+};
 
 const MyChats = () => {
-  // Added state for search term, sort type, and filtered chats
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
   const [sortType, setSortType] = useState<string>("default");
   const [filteredChats, setFilteredChats] = useState<chatEntity[]>([]);
 
@@ -55,12 +73,10 @@ const MyChats = () => {
   useEffect(() => {
     const filterAndSortChats = () => {
       let result = chats.filter((chat) => {
-        const searchString = searchTerm.toLowerCase();
+        const searchString = debouncedSearch.toLowerCase();
         if (chat.isGroupChat) {
-          // Search by group name for group chats
           return chat.chatName?.toLowerCase().includes(searchString);
         } else {
-          // Search by other user's name for individual chats
           const otherUser = chat.users.find(
             (user) => user._id.toString() !== userId
           );
@@ -105,7 +121,7 @@ const MyChats = () => {
     };
 
     filterAndSortChats();
-  }, [chats, searchTerm, sortType, userId]);
+  }, [chats, debouncedSearch, sortType, userId]);
 
   // Updated search handler
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,11 +262,20 @@ const MyChats = () => {
                 borderRadius="lg"
                 key={chatItem._id?.toString()}
               >
-                <Text>
-                  {!chatItem.isGroupChat
-                    ? getSender(userId, chatItem.users)
-                    : chatItem.chatName}
-                </Text>
+                <Box display="flex" justifyContent="space-between">
+                  <Text fontWeight="bold">
+                    {!chatItem.isGroupChat
+                      ? getSender(userId, chatItem.users)
+                      : chatItem.chatName}
+                  </Text>
+                  <Text>
+                    {formatDate(
+                      (chatItem.latestMessage &&
+                        chatItem.latestMessage.updatedAt) ||
+                        " "
+                    )}
+                  </Text>
+                </Box>
                 {chatItem.latestMessage && (
                   <Text fontSize="xs">
                     <b>{chatItem.latestMessage.sender.name} : </b>

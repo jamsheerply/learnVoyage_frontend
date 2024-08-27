@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import TableCategories from "../../../components/admin/category/TableCategories";
 import { AppDispatch, RootState } from "../../../store/store";
-import { useEffect, useState } from "react";
 import { readAllCategory } from "../../../store/category/CategoryActions";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useNavigate } from "react-router-dom";
@@ -97,7 +96,7 @@ const Categories = () => {
   };
 
   return (
-    <div>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       {loading && (
         <div className="flex items-center justify-center min-h-screen">
           <ClipLoader
@@ -112,79 +111,94 @@ const Categories = () => {
       )}
       {error && <SomeWentWrong />}
       {!loading && !error && (
-        <>
-          <div className="flex justify-end mr-16 m-3">
-            <button
-              className="bg-green-500 p-2 rounded-lg font-semibold text-white"
-              onClick={() => {
-                navigate("/admin/add-category");
-              }}
-            >
-              Add Category
-            </button>
-          </div>
-          <div className="flex justify-between my-2 mr-16 ml-3">
-            <div className="w-48">
+        <div className="space-y-6 py-3 ">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <h1 className="text-2xl font-semibold px-3">Categories</h1>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
               <Input
-                placeholder="search"
+                placeholder="Search"
                 value={searchTerm}
                 onChange={handleSearchChange}
+                className="w-full sm:w-48"
               />
-            </div>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <Filter />
+              <div className="flex space-x-2 w-full sm:w-auto">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      <Filter className="mr-2 h-4 w-4" />
+                      Filter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuLabel>Status</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={showStatusBar}
+                      onCheckedChange={setShowStatusBar}
+                    >
+                      Active
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={showPanel}
+                      onCheckedChange={setShowPanel}
+                    >
+                      Blocked
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button
+                  className="bg-green-500 hover:bg-green-600 text-white w-full sm:w-auto"
+                  onClick={() => navigate("/admin/add-category")}
+                >
+                  Add Category
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>Status</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={showStatusBar}
-                  onCheckedChange={setShowStatusBar}
-                >
-                  Active
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showPanel}
-                  onCheckedChange={setShowPanel}
-                >
-                  Blocked
-                </DropdownMenuCheckboxItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </div>
+            </div>
           </div>
-          {paginatedCategories.length > 0 && (
-            <TableCategories
-              TableHead={["SlNo", "Category Name", "Status", "Image", "Action"]}
-              TableData={paginatedCategories}
-            />
+
+          <div className="overflow-x-auto">
+            {paginatedCategories.length > 0 && (
+              <TableCategories
+                TableHead={[
+                  "SlNo",
+                  "Category Name",
+                  "Status",
+                  "Image",
+                  "Action",
+                ]}
+                TableData={paginatedCategories}
+              />
+            )}
+          </div>
+
+          {total > limit && (
+            <Pagination className="flex justify-center mt-6">
+              <PaginationContent>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(Math.max(1, page - 1))}
+                  href="#"
+                />
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      href="#"
+                      onClick={() => handlePageChange(index + 1)}
+                      className={page === index + 1 ? "bg-blue-100" : ""}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationNext
+                  onClick={() =>
+                    handlePageChange(Math.min(totalPages, page + 1))
+                  }
+                  href="#"
+                />
+              </PaginationContent>
+            </Pagination>
           )}
-          <Pagination className="flex justify-center">
-            <PaginationContent>
-              <PaginationPrevious
-                onClick={() => handlePageChange(Math.max(1, page - 1))}
-                href="#"
-              />
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationNext
-                onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
-                href="#"
-              />
-            </PaginationContent>
-          </Pagination>
-        </>
+        </div>
       )}
     </div>
   );

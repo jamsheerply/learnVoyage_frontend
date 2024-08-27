@@ -5,26 +5,26 @@ import { baseURLCourse } from "@/store/api/CourseApi";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import SimilarCoursesCard from "../../components/public/course/SimilarCoursesCard";
 import Footer from "../../components/public/common/Footer";
 import { readByEnrollmentCourseIdApi } from "@/store/api/EnrollmentApi";
 import { EnrollmentEntity } from "@/types/enrollmentEntity";
-import { Types } from "mongoose";
-
-interface Course {
-  _id?: Types.ObjectId;
-  courseName: string;
-  courseDemoVideoUrl: string;
-  description: string;
-  coursePrice: string;
-  lessons: { videoUrl: string; title: string; duration: string }[];
-}
+import { ICourse } from "@/types/course.entity";
+import StreamingVideo from "@/components/public/course/StreamingVideo";
+import ReviewsAndRatings from "@/components/public/course/ReviewsAndRatings ";
+import { ReviewEntity } from "@/types/rateAndReviewEntity";
+import { readRateAndReviewCourseIdApi } from "@/store/api/ReviewApi";
 
 const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<ICourse | null>(null);
   const [enrolled, setEnrolled] = useState<EnrollmentEntity | null>(null);
+  const [mainVideoDuration, setMainVideoDuration] = useState<number>(0);
+  const [lessonDurations, setLessonDurations] = useState<{
+    [key: string]: number;
+  }>({});
+  const [review, setReview] = useState<ReviewEntity[] | null>([]);
+
   const auth = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
@@ -45,7 +45,6 @@ const CourseDetails: React.FC = () => {
       (async () => {
         try {
           const response = await readByEnrollmentCourseIdApi(id!);
-          console.log(response.data.data);
           setEnrolled(response.data.data);
         } catch (error) {
           console.error("Error checking course enrollment:", error);
@@ -53,6 +52,33 @@ const CourseDetails: React.FC = () => {
       })();
     }
   }, [auth.userId, id]);
+
+  const formatDuration = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
+  const handleMainVideoDurationSet = (duration: number) => {
+    setMainVideoDuration(duration);
+  };
+
+  const handleLessonVideoDurationSet = (lessonId: string, duration: number) => {
+    setLessonDurations((prevDurations) => ({
+      ...prevDurations,
+      [lessonId]: duration,
+    }));
+  };
+
+  useEffect(() => {
+    const fetchReview = async () => {
+      if (id) {
+        const reviewResponse = await readRateAndReviewCourseIdApi(id);
+        setReview(reviewResponse.data.data);
+      }
+    };
+    fetchReview();
+  }, []);
 
   if (!course) {
     return <div>Loading...</div>;
@@ -104,20 +130,20 @@ const CourseDetails: React.FC = () => {
 
   return (
     <>
+      <div className="h-10 hidden lg:block"></div>
       <div className="w-[88%] mx-auto">
         <div className="flex">
           <div className="bg-green-200 w-full">
             <div className="flex w-full">
               <div className="w-full p-3 px-4">
-                <h1 className="font-semibold">
-                  Home | Courses | Course Details
-                </h1>
+                <h1 className="font-semibold text-2xl">Course Details</h1>
                 <div className="rounded-lg overflow-hidden my-3">
-                  <video
-                    controls
-                    className="w-full h-full"
-                    src={course.courseDemoVideoUrl}
-                  ></video>
+                  <StreamingVideo
+                    publicId={course.courseDemoVideo.publicId}
+                    version={course.courseDemoVideo.version}
+                    controls={true}
+                    onDurationSet={handleMainVideoDurationSet}
+                  />
                 </div>
                 <h6 className="font-bold text-2xl ml-1">{course.courseName}</h6>
               </div>
@@ -128,16 +154,20 @@ const CourseDetails: React.FC = () => {
                     key={index}
                     className="flex gap-3 bg-white px-2 rounded-lg my-2"
                   >
-                    <div>
-                      <video
-                        className="w-20 h-20"
-                        src={lesson.videoUrl}
-                      ></video>
+                    <div className="w-20 h-20 flex items-center">
+                      <StreamingVideo
+                        publicId={lesson.video.publicId}
+                        version={lesson.video.version}
+                        controls={false}
+                        onDurationSet={(duration) =>
+                          handleLessonVideoDurationSet(lesson._id, duration)
+                        }
+                      />
                     </div>
                     <div className="flex flex-col justify-center">
-                      <h1 className="font-semibold">{lesson.title}</h1>
+                      <h1 className="font-semibold">{lesson.lessonTitle}</h1>
                       <h6 className="text-green-400">
-                        {lesson.duration || "1:56"}
+                        {formatDuration(lessonDurations[lesson._id] || 0)}
                       </h6>
                     </div>
                   </div>
@@ -172,7 +202,7 @@ const CourseDetails: React.FC = () => {
             </div>
             <div className="flex justify-between my-5">
               <h6>Duration</h6>
-              <h6>10 days</h6>
+              <h6>{formatDuration(mainVideoDuration)}</h6>
             </div>
             <div className="flex justify-between my-5">
               <h6>Lessons</h6>
@@ -200,8 +230,7 @@ const CourseDetails: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="font-bold text-2xl">Similar Courses</div>
-        <SimilarCoursesCard />
+        {review && review.length > 0 && <ReviewsAndRatings course={review} />}
       </div>
       <Footer />
     </>

@@ -158,8 +158,8 @@ const StudentProfile: React.FC = () => {
           setHasChanges(true);
         }
       } catch (error) {
-        const customError = error as CustomError;
-        console.error("Error uploading image:", customError?.message);
+        const err = error as CustomError;
+        console.error("Error uploading image:", err?.message);
         toast.error("Failed to upload profile image, try again");
       } finally {
         setIsUploading(false);
@@ -221,10 +221,10 @@ const StudentProfile: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="mx-[10%] w-[80%]">
       <div className="p-2">Generals</div>
-      <div className="flex justify-center">
-        <div className="w-[80%]">
-          <div className="flex gap-5">
-            <span>
+      <div className="flex flex-col lg:flex-row justify-center lg:gap-5">
+        <div className="w-full lg:w-[80%]">
+          <div className="flex flex-col lg:flex-row gap-5">
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="text"
                 name="firstName"
@@ -234,7 +234,7 @@ const StudentProfile: React.FC = () => {
                 errorMsg={errors.firstName}
               />
             </span>
-            <span>
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="text"
                 name="lastName"
@@ -245,8 +245,8 @@ const StudentProfile: React.FC = () => {
               />
             </span>
           </div>
-          <div className="flex gap-5">
-            <span>
+          <div className="flex flex-col lg:flex-row gap-5">
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="email"
                 name="email"
@@ -257,7 +257,7 @@ const StudentProfile: React.FC = () => {
                 disabled
               />
             </span>
-            <span>
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="tel"
                 name="phoneNumber"
@@ -268,8 +268,8 @@ const StudentProfile: React.FC = () => {
               />
             </span>
           </div>
-          <div className="flex gap-5">
-            <span>
+          <div className="flex flex-col lg:flex-row gap-5">
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="text"
                 name="profession"
@@ -280,8 +280,8 @@ const StudentProfile: React.FC = () => {
               />
             </span>
           </div>
-          <div className="flex gap-5">
-            <span>
+          <div className="flex flex-col lg:flex-row gap-5">
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="password"
                 name="password"
@@ -291,7 +291,7 @@ const StudentProfile: React.FC = () => {
                 errorMsg={errors.password}
               />
             </span>
-            <span>
+            <span className="w-full lg:w-1/2">
               <InputProfile
                 type="password"
                 name="confirmPassword"
@@ -303,9 +303,9 @@ const StudentProfile: React.FC = () => {
             </span>
           </div>
         </div>
-        <div className="w-[20%] flex justify-center items-center flex-col">
+        <div className="w-full lg:w-[20%] flex justify-center items-center flex-col mt-6 lg:mt-0">
           <div
-            className="h-[75%] w-[80%] bg-green-200 cursor-pointer rounded-md overflow-hidden relative"
+            className="h-[200px] w-[200px] bg-green-200 cursor-pointer rounded-md overflow-hidden relative"
             onClick={handleProfilePictureClick}
           >
             <input
@@ -328,10 +328,10 @@ const StudentProfile: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="p-2">Online Presence</div>
-      <div className="w-[80%]">
-        <div className="flex gap-5">
-          <span>
+      <div className="p-2 mt-6">Online Presence</div>
+      <div className="flex flex-col gap-5 w-full lg:w-[80%]">
+        <div className="flex flex-col lg:flex-row gap-5">
+          <span className="w-full lg:w-1/3">
             <InputProfile2
               type="text"
               name="instagram"
@@ -341,7 +341,7 @@ const StudentProfile: React.FC = () => {
               errorMsg={errors.instagram}
             />
           </span>
-          <span>
+          <span className="w-full lg:w-1/3">
             <InputProfile2
               type="text"
               name="linkedIn"
@@ -351,7 +351,7 @@ const StudentProfile: React.FC = () => {
               errorMsg={errors.linkedIn}
             />
           </span>
-          <span>
+          <span className="w-full lg:w-1/3">
             <InputProfile2
               type="text"
               name="github"
@@ -363,7 +363,7 @@ const StudentProfile: React.FC = () => {
           </span>
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-6">
         <button
           type="submit"
           className={`p-3 mx-2 border rounded-lg w-[150px] ${

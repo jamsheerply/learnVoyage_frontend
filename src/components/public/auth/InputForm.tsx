@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface InputFormProps {
   tailwindIClass?: string;
@@ -17,20 +18,37 @@ const InputForm: React.FC<InputFormProps> = ({
   onChange,
   errorMsg = "",
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className={`w-full h-full flex-col ${tailwindIClass}`}>
-      <div className="flex justify-center">
+      <div className="relative w-full">
         <input
-          type={type}
-          className="bg-gray-200 p-[10px] w-[350px] rounded-md px-4"
+          type={type === "password" && showPassword ? "text" : type}
+          className="bg-gray-200 p-[10px] w-full rounded-md px-4 pr-10"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
         />
+        {type === "password" && (
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-transparent border-none cursor-pointer"
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5 text-gray-500" />
+            ) : (
+              <Eye className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
+        )}
       </div>
-      <div className="sm:px-[195px] lg:px-[130px] text-red-500">
-        {errorMsg && <p>{errorMsg}</p>}
-      </div>
+      {errorMsg && <p className="text-red-500 mt-1">{errorMsg}</p>}
     </div>
   );
 };

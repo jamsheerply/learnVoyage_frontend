@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { jwtDecode } from "jwt-decode";
 import { loginUser, logoutUser, registerUser, verifyOtp } from "./authActions";
-import toast from "react-hot-toast";
 
 interface UserData {
   id: string;

@@ -1,5 +1,6 @@
 import { TransactionsTable } from "@/components/admin/transactions/transactionsTable";
 import CourseFilter from "@/components/public/course/CourseFilter";
+import { useDebounce } from "@/custom Hooks/hooks";
 import { Input } from "@/shadcn/ui/input";
 import {
   Pagination,
@@ -26,8 +27,9 @@ import React, { useEffect, useState } from "react";
 function Transactions() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState<number>(1);
-  const [limit] = useState<number>(4);
+  const [limit] = useState<number>(5);
   const [total, setTotal] = useState<number>(0);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<{
@@ -76,7 +78,7 @@ function Transactions() {
         params: {
           page,
           limit,
-          search: searchTerm || "",
+          search: debouncedSearch || "",
           method: selectedMethodIds.join(","),
           status: selectedStatusIds.join(","),
         },
@@ -94,7 +96,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchTransactions();
-  }, [page, limit, searchTerm, selectedMethod, selectedStatus]);
+  }, [page, limit, debouncedSearch, selectedMethod, selectedStatus]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

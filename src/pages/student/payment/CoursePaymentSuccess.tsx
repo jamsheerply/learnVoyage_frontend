@@ -1,7 +1,8 @@
+/* eslint-disable react/react-in-jsx-scope */
 import Footer from "@/components/public/common/Footer";
 import { paymentUpdateApi } from "@/store/api/PaymentApi";
 import { paymentEntity } from "@/types/paymentEntity";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 function CoursePaymentSuccess() {

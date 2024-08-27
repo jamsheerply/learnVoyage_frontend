@@ -1,11 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  CREATE_COURSE,
-  GET_ALL_COURSES,
-  READ_BY_ID_COURSE,
-  UPDATE_COURSE,
-} from "./types";
-import {
   createCourseApi,
   getAllCourseApi,
   readByIdCourseApi,
@@ -13,25 +7,17 @@ import {
 } from "../api/CourseApi";
 import { handleAxiosError } from "../../utils.ts/HandleAxiosError";
 import { PayloadActionProp } from "./coursesSlice";
-
-export interface Course {
-  mentorId?: string;
-  courseName?: string;
-  categoryId?: string;
-  description?: string;
-  language?: string;
-  coursePrice?: number;
-  courseThumbnailUrl?: string;
-  courseDemoVideoUrl?: string;
-  id?: string;
-  lessons?: Lesson[];
-}
+import { ICourse } from "@/types/course.entity";
 
 export interface Lesson {
+  lessonTitle: string;
   lessonId: number;
-  title: string;
+  // title: string;
   description: string;
-  videoUrl: string | null;
+  video: {
+    publicId: string;
+    version: string;
+  };
 }
 
 export interface CourseWithLesson {
@@ -43,10 +29,10 @@ export const getAllCoursesList = createAsyncThunk<
   PayloadActionProp,
   void,
   { rejectValue: string }
->(GET_ALL_COURSES, async (_, { rejectWithValue }) => {
+>("instructor/courses", async (_, { rejectWithValue }) => {
   try {
     const response = await getAllCourseApi();
-    console.log(JSON.stringify(response.data.data));
+    // console.log(JSON.stringify(response.data.data));
     return response.data.data;
   } catch (error: unknown) {
     const errorMessage = handleAxiosError(error);
@@ -55,10 +41,10 @@ export const getAllCoursesList = createAsyncThunk<
 });
 
 export const createCourse = createAsyncThunk<
-  Course,
-  Course,
+  ICourse,
+  ICourse,
   { rejectValue: string }
->(CREATE_COURSE, async (courseData, { rejectWithValue }) => {
+>("instructor/course/create", async (courseData, { rejectWithValue }) => {
   try {
     const response = await createCourseApi(courseData);
 
@@ -70,10 +56,10 @@ export const createCourse = createAsyncThunk<
 });
 
 export const updateCourse = createAsyncThunk<
-  Course,
-  Course,
+  ICourse,
+  ICourse,
   { rejectValue: string }
->(UPDATE_COURSE, async (courseData, { rejectWithValue }) => {
+>("instructor/course/update", async (courseData, { rejectWithValue }) => {
   try {
     const response = await updatedCourseApi(courseData);
     return response.data.data;
@@ -87,7 +73,7 @@ export const readByIdCourse = createAsyncThunk<
   CourseWithLesson,
   string,
   { rejectValue: string }
->(READ_BY_ID_COURSE, async (id, { rejectWithValue }) => {
+>("instructor/course/read-by-id/:id", async (id, { rejectWithValue }) => {
   try {
     const response = await readByIdCourseApi(id);
     // console.log(JSON.stringify(response.data.data));

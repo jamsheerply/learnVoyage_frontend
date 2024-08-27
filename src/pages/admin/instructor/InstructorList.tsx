@@ -70,7 +70,7 @@ const InstructorList = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <ClipLoader
           color={color}
           loading={loading}
@@ -89,40 +89,44 @@ const InstructorList = () => {
 
   return (
     <>
-      <div className="flex justify-between my-2 mx-3">
-        <div className="w-48">
-          <Input placeholder="search" />
+      <div className="flex flex-col md:flex-row justify-between items-center mx-4 my-3">
+        <div className="text-lg font-semibold">Instructors</div>
+        <div className="flex flex-col md:flex-row gap-3 items-center mt-2 md:mt-0">
+          <div className="w-full md:w-48">
+            <Input placeholder="Search" />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Filter />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={showStatusBar}
+                onCheckedChange={setShowStatusBar}
+              >
+                Active
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={showPanel}
+                onCheckedChange={setShowPanel}
+              >
+                Blocked
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <Filter />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Status</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={showStatusBar}
-              onCheckedChange={setShowStatusBar}
-            >
-              Active
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={showPanel}
-              onCheckedChange={setShowPanel}
-            >
-              Blocked
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
-      <Table
-        TableHead={["Name", "Email", "Status", "Action"]}
-        TableData={formattedInstructors}
-      />
-      <Pagination className="flex justify-center">
+      <div className="overflow-x-auto">
+        <Table
+          TableHead={["Name", "Email", "Status", "Action"]}
+          TableData={formattedInstructors}
+        />
+      </div>
+      <Pagination className="flex justify-center mt-4">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious href="#" />

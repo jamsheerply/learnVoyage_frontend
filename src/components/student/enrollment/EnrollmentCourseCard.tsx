@@ -1,7 +1,7 @@
+import React from "react";
 import { Button } from "@/shadcn/ui/button";
 import { Progress } from "@/shadcn/ui/progress";
 import { Book, ChevronRight, Trophy, User } from "lucide-react";
-import React from "react";
 import { Types } from "mongoose";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
@@ -57,7 +57,7 @@ function EnrollmentCourseCard({ enrollment }: Props) {
         return (
           <div
             key={enroll._id?.toString()}
-            className="flex lg:flex-row flex-col  mt-4 lg:rounded-lg p-2 overflow-hidden border-2 border-green-300 shadow-md font-bold  h-56 "
+            className="flex lg:flex-row flex-col  mt-4 lg:rounded-lg p-2 overflow-hidden border-2  shadow-md font-bold  h-56 "
           >
             {/* image part */}
             <div className="w-96 h-full overflow-hidden ">

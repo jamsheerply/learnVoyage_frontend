@@ -10,3 +10,7 @@ export const api: AxiosInstance = axios.create({
 export const paymentUpdateApi = (paymentId: string | null, status: string) => {
   return api.post("/update-payment", { _id: paymentId, status });
 };
+
+export const readTotalRevenueApi = () => {
+  return api.get("/read-total-revenue");
+};

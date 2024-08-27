@@ -1,191 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import { useParams } from "react-router-dom";
-
-// interface Video {
-//   _id: string;
-//   title: string;
-//   publicId: string;
-//   version: string;
-//   createdAt: string;
-// }
-
-// const SingleVideo: React.FC = () => {
-//   const [video, setVideo] = useState<Video | null>(null);
-//   const { id } = useParams<{ id: string }>();
-
-//   useEffect(() => {
-//     const fetchVideo = async () => {
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:3000/api/content-management/videos/${id}`
-//         );
-//         setVideo(response.data);
-//       } catch (error) {
-//         console.error("Error fetching video:", error);
-//       }
-//     };
-//     fetchVideo();
-//   }, [id]);
-
-//   if (!video) return <div>Loading...</div>;
-
-//   return (
-//     <div>
-//       <h2>{video.title}</h2>
-//       <video
-//         controls
-//         width="50%"
-//         height="50%"
-//         controlsList="nodownload"
-//         onError={(e) => console.error("Video error:", e)}
-//       >
-//         <source
-//           src={`http://localhost:3000/api/content-management/videos/stream/${video._id}`}
-//           type="video/mp4"
-//         />
-//         Your browser does not support the video tag.
-//       </video>
-//       <p>Uploaded on: {new Date(video.createdAt).toLocaleString()}</p>
-//     </div>
-//   );
-// };
-// export default SingleVideo;
-
-// import React, { useState, useEffect } from "react";
-// import axios from "axios";
-// import { useParams } from "react-router-dom";
-
-// interface Video {
-//   _id: string;
-//   title: string;
-//   publicId: string;
-//   version: string;
-//   createdAt: string;
-// }
-
-// const SingleVideo: React.FC = () => {
-//   const [video, setVideo] = useState<Video | null>(null);
-//   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-//   const [error, setError] = useState<string | null>(null);
-//   const { id } = useParams<{ id: string }>();
-
-//   useEffect(() => {
-//     const fetchVideo = async () => {
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:3000/api/content-management/videos/${id}`
-//         );
-//         setVideo(response.data);
-
-//         const urlResponse = await axios.get(
-//           `http://localhost:3000/api/content-management/videos/stream/${id}`
-//         );
-//         setVideoUrl(urlResponse.data.url);
-//       } catch (error) {
-//         console.error("Error fetching video:", error);
-//         setError("Failed to load video. Please try again later.");
-//       }
-//     };
-//     fetchVideo();
-//   }, [id]);
-
-//   if (error) return <div>{error}</div>;
-//   if (!video || !videoUrl) return <div>Loading...</div>;
-
-//   return (
-//     <div>
-//       <h2>{video.title}</h2>
-//       <video
-//         controls
-//         width="100%"
-//         onError={(e) => console.error("Video error:", e)}
-//       >
-//         <source src={videoUrl} type="video/mp4" />
-//         Your browser does not support the video tag.
-//       </video>
-//       <p>Uploaded on: {new Date(video.createdAt).toLocaleString()}</p>
-//     </div>
-//   );
-// };
-
-// export default SingleVideo;
-
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import Hls from "hls.js";
-
-interface Video {
-  _id: string;
-  title: string;
-  publicId: string;
-  version: string;
-  createdAt: string;
-}
-
-const SingleVideo: React.FC = () => {
-  const [video, setVideo] = useState<Video | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { id } = useParams<{ id: string }>();
-
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/content-management/videos/${id}`
-        );
-        setVideo(response.data);
-      } catch (error) {
-        console.error("Error fetching video:", error);
-      }
-    };
-    fetchVideo();
-  }, [id]);
-
-  useEffect(() => {
-    if (video && videoRef.current) {
-      const videoSrc = `http://localhost:3000/api/content-management/videos/stream/${id}`;
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          maxBufferSize: 0,
-          maxBufferLength: 30,
-          liveSyncDuration: 30,
-          liveMaxLatencyDuration: Infinity,
-        });
-        hls.loadSource(videoSrc);
-        hls.attachMedia(videoRef.current);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoRef.current?.play();
-        });
-      } else if (
-        videoRef.current.canPlayType("application/vnd.apple.mpegurl")
-      ) {
-        videoRef.current.src = videoSrc;
-      }
-    }
-  }, [video, id]);
-
-  if (!video) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <h2>{video.title}</h2>
-      <video
-        ref={videoRef}
-        controls
-        width="50%"
-        height="50%"
-        controlsList="nodownload"
-        onError={(e) => console.error("Video error:", e)}
-      />
-      <p>Uploaded on: {new Date(video.createdAt).toLocaleString()}</p>
-    </div>
-  );
-};
-
-export default SingleVideo;
-
 // import React, { useState, useEffect, useRef } from "react";
 // import axios from "axios";
 // import { useParams } from "react-router-dom";
@@ -197,14 +9,11 @@ export default SingleVideo;
 //   publicId: string;
 //   version: string;
 //   createdAt: string;
-//   adaptiveStreamingUrl: string;
 // }
 
 // const SingleVideo: React.FC = () => {
 //   const [video, setVideo] = useState<Video | null>(null);
-//   const [currentQuality, setCurrentQuality] = useState<string>("auto");
 //   const videoRef = useRef<HTMLVideoElement>(null);
-//   const hlsRef = useRef<Hls | null>(null);
 //   const { id } = useParams<{ id: string }>();
 
 //   useEffect(() => {
@@ -223,20 +32,18 @@ export default SingleVideo;
 
 //   useEffect(() => {
 //     if (video && videoRef.current) {
-//       const videoSrc = video.adaptiveStreamingUrl;
-
+//       const videoSrc = `http://localhost:3000/api/content-management/videos/stream/${id}`;
 //       if (Hls.isSupported()) {
-//         hlsRef.current = new Hls({
+//         const hls = new Hls({
 //           maxBufferSize: 0,
-//           maxBufferLength: 30,
-//           enableWorker: true,
+//           maxBufferLength: 10,
+//           liveSyncDuration: 10,
+//           liveMaxLatencyDuration: Infinity,
 //         });
-//         hlsRef.current.loadSource(videoSrc);
-//         hlsRef.current.attachMedia(videoRef.current);
-
-//         hlsRef.current.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-//           const availableQualities = data.levels.map((l) => l.height);
-//           console.log("Available qualities:", availableQualities);
+//         hls.loadSource(videoSrc);
+//         hls.attachMedia(videoRef.current);
+//         hls.on(Hls.Events.MANIFEST_PARSED, () => {
+//           videoRef.current?.play();
 //         });
 //       } else if (
 //         videoRef.current.canPlayType("application/vnd.apple.mpegurl")
@@ -244,31 +51,12 @@ export default SingleVideo;
 //         videoRef.current.src = videoSrc;
 //       }
 //     }
-
-//     return () => {
-//       if (hlsRef.current) {
-//         hlsRef.current.destroy();
-//       }
-//     };
-//   }, [video]);
-
-//   const handleQualityChange = (quality: string) => {
-//     if (hlsRef.current) {
-//       if (quality === "auto") {
-//         hlsRef.current.currentLevel = -1;
-//       } else {
-//         const levels = hlsRef.current.levels;
-//         const level = levels.findIndex((l) => l.height.toString() === quality);
-//         hlsRef.current.currentLevel = level;
-//       }
-//       setCurrentQuality(quality);
-//     }
-//   };
+//   }, [video, id]);
 
 //   if (!video) return <div>Loading...</div>;
 
 //   return (
-//     <div>
+//     <div className=" flex justify-center">
 //       <h2>{video.title}</h2>
 //       <video
 //         ref={videoRef}
@@ -279,22 +67,101 @@ export default SingleVideo;
 //         onError={(e) => console.error("Video error:", e)}
 //       />
 //       <p>Uploaded on: {new Date(video.createdAt).toLocaleString()}</p>
-//       <div>
-//         <label>Quality: </label>
-//         <select
-//           value={currentQuality}
-//           onChange={(e) => handleQualityChange(e.target.value)}
-//         >
-//           <option value="auto">Auto</option>
-//           {hlsRef.current?.levels.map((level) => (
-//             <option key={level.height} value={level.height.toString()}>
-//               {level.height}p
-//             </option>
-//           ))}
-//         </select>
-//       </div>
 //     </div>
 //   );
 // };
 
 // export default SingleVideo;
+
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import ReactPlayer from "react-player";
+
+const SingleVideo: React.FC = () => {
+  // const [video, setVideo] = useState<Video | null>(null);
+  const [streamUrl, setStreamUrl] = useState<string>("");
+  const [progress, setProgress] = useState(0);
+  const [videoCompleted, setVideoCompleted] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const playerRef = useRef<ReactPlayer>(null);
+
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        // console.log("Fetching video data...");
+        // const response = await axios.get(
+        //   `http://localhost:3000/api/content-management/videos/${id}`
+        // );
+        // console.log("Video data received:", response.data);
+        // setVideo(response.data);
+
+        // Set the stream URL to your backend endpoint
+        setStreamUrl(
+          `http://localhost:3000/api/content-management/videos/stream/test/${id}`
+        );
+      } catch (error) {
+        console.error("Error fetching video:", error);
+      }
+    };
+    fetchVideo();
+  }, [id]);
+
+  const handleProgress = (state: {
+    played: number;
+    playedSeconds: number;
+    loaded: number;
+    loadedSeconds: number;
+  }) => {
+    setProgress(state.played * 100);
+    if (state.played >= 0.8 && !videoCompleted) {
+      setVideoCompleted(true);
+      console.log("Video has reached 80% completion!");
+    }
+
+    // Prefetch next chunk when 70% of the current chunk is loaded
+    if (state.loaded >= 0.7 && state.loaded < 0.9) {
+      prefetchNextChunk();
+    }
+  };
+
+  const prefetchNextChunk = () => {
+    // Calculate the next chunk's start time
+    const currentTime = playerRef.current?.getCurrentTime();
+    const nextChunkStart = currentTime !== undefined ? currentTime + 30 : 30; // 30 seconds ahead or default to 30 if currentTime is undefined
+    const videoElement =
+      playerRef.current?.getInternalPlayer() as HTMLVideoElement;
+    if (videoElement && "preload" in videoElement) {
+      videoElement.preload = "auto";
+      videoElement.src = `${streamUrl}#t=${nextChunkStart}`;
+    }
+  };
+
+  if (!streamUrl) return <div>Loading...</div>;
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-4xl p-4">
+        <ReactPlayer
+          ref={playerRef}
+          url={streamUrl}
+          controls
+          width="100%"
+          controlsList="nodownload"
+          height="auto"
+          onProgress={handleProgress}
+          config={{
+            file: {
+              attributes: {
+                controlsList: "nodownload",
+              },
+            },
+          }}
+        />
+        <div>Progress: {progress.toFixed(2)}%</div>
+        {videoCompleted && <div>Video has reached 80% completion!</div>}
+      </div>
+    </div>
+  );
+};
+
+export default SingleVideo;

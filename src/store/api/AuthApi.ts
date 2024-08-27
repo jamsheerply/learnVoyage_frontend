@@ -1,4 +1,3 @@
-import { userEntity } from "@/types/userEntity";
 import { userProfileEntity } from "@/types/userProfileEntity";
 import axios, { AxiosInstance } from "axios";
 
@@ -39,4 +38,12 @@ export const getProfileByIdApi = (id: string) => {
 
 export const updateProfileApi = (userData: userProfileEntity) => {
   return api.patch("/update-profile", userData);
+};
+
+export const readTotalStudnetsAndInstructorsApi = () => {
+  return api.get("/read/total-students-and-instructors");
+};
+
+export const readAllStudentApi = () => {
+  return api.get("/readAllStudents");
 };
