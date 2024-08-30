@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learn-voyage-frontend-deployment
+  labels:
+    app: learn-voyage-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: learn-voyage-frontend
+  template:
+    metadata:
+      labels:
+        app: learn-voyage-frontend
+    spec:
+      containers:
+        - name: learn-voyage-frontend
+          image: nahyan007/learnvoyage-frontend:latest
+          ports:
+            - containerPort: 5173
+          envFrom:
+            - configMapRef:
+                name: frontend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learn-voyage-frontend-service
+spec:
+  selector:
+    app: learn-voyage-frontend
+  ports:
+    - port: 5173
+      targetPort: 5173
