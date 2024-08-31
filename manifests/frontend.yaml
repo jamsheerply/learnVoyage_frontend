@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: learn-voyage-frontend
-          image: jamsheerply/learnvoyage-client:latest
+          image: jamsheerply/learnvoyage-frontend:latest
           ports:
             - containerPort: 5173
           envFrom:

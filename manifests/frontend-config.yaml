@@ -7,6 +7,6 @@ metadata:
 data:
   VITE_CLOUD_NAME: "dwcytg5ps"
   VITE_UPLOAD_PRESET: "tq1e949s"
-  VITE_BASE_URL: "http://localhost:3000/api"
-  VITE_CHAT_URL: "http://localhost:3002"
+  VITE_BASE_URL: "https://jamsheerply.life/api"
+  VITE_CHAT_URL: "https://jamsheerply.life"
   VITE_STRIPE_PK: "pk_test_51PZ3biC85Qvu21M28Q7adNqK627nwyaMrAZXxg2oLkNuPn9FGGwUfMXeXZC7fGIBcLWzFi49LHGmxv8eSjIq49Dr00F5w3MoYK"
