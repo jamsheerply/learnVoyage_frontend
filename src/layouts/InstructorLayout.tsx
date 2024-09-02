@@ -80,7 +80,7 @@ const InstructorLayout = () => {
   };
 
   const navItems = [
-    { name: "Overview", path: "/instructor/overview", icon: Home },
+    // { name: "Overview", path: "/instructor/overview", icon: Home },
     { name: "Courses", path: "/instructor/courses", icon: BookOpen },
     { name: "Exams", path: "/instructor/exams", icon: Book },
     { name: "Analytics", path: "/instructor/analytics", icon: Settings },

@@ -126,7 +126,7 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Course Status</CardTitle>
+              <CardTitle>My Recent Courses</CardTitle>
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <Table>
@@ -136,7 +136,6 @@ const Dashboard: React.FC = () => {
                     <TableHead>Sale</TableHead>
                     <TableHead>Pass</TableHead>
                     <TableHead>Like</TableHead>
-                    <TableHead>Comment</TableHead>
                     <TableHead>Trend</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -146,7 +145,6 @@ const Dashboard: React.FC = () => {
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>{item.sale}</TableCell>
                       <TableCell>{item.pass}</TableCell>
-                      <TableCell>{item.like}</TableCell>
                       <TableCell>{item.comment}</TableCell>
                       <TableCell>
                         <BarChart

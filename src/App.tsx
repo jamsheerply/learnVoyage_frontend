@@ -116,7 +116,7 @@ const router = createBrowserRouter(
           </InstructorAuth>
         }
       >
-        <Route path="overview" element={<Dashboard />} />
+        {/* <Route path="overview" element={<Dashboard />} /> */}
         <Route path="courses" element={<CoursesList />} />
         <Route path="create-course" element={<CreateCourse />} />
         <Route path="add-lesson/:id" element={<AddLesson />} />
