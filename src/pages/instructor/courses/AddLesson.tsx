@@ -40,12 +40,20 @@ const lessonSchema = Yup.object().shape({
     .required("Description is required")
     .min(10, "Description must be at least 10 characters long")
     .max(500, "Description cannot exceed 500 characters"),
-  video: Yup.object()
-    .shape({
-      publicId: Yup.string().required("Video is required"),
-      version: Yup.string().required("Video is required"),
+  video: Yup.mixed()
+    .nullable()
+    .test("is-valid-video", "Video is required", (value) => {
+      if (value === null) return false;
+      return value && value.publicId && value.version;
     })
-    .nullable(),
+    .test("has-public-id", "Video publicId is required", (value) => {
+      if (value === null) return true;
+      return value && value.publicId;
+    })
+    .test("has-version", "Video version is required", (value) => {
+      if (value === null) return true;
+      return value && value.version;
+    }),
 });
 
 const AddLesson = () => {
@@ -163,6 +171,7 @@ const AddLesson = () => {
         try {
           await lessonSchema.validate(lesson, { abortEarly: false });
         } catch (error) {
+          console.log("error in validate", JSON.stringify(error));
           if (error instanceof Yup.ValidationError) {
             newErrors[lesson.lessonId] = error.inner.reduce((acc, err) => {
               if (err.path) {
@@ -177,7 +186,8 @@ const AddLesson = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  console.log("errors", JSON.stringify(errors));
+  console.log("lessons", JSON.stringify(lessons));
   const handleUploadAllLessons = async (
     updatedLessons?: Lesson[],
     remove = false
@@ -187,7 +197,7 @@ const AddLesson = () => {
     const isValid = await validateLessons(lessonsToUpload);
 
     if (!isValid) {
-      console.error("Validation failed");
+      console.log("Validation failed");
       return;
     }
 

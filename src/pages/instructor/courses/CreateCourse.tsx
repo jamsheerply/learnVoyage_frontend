@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CustomError } from "@/utils.ts/customError";
 import { ICourse } from "@/types/course.entity";
+import Modal from "../../../components/instructor/courses/Modal";
 
 interface Category {
   id: string;
@@ -52,10 +53,15 @@ const CreateCourse: React.FC = () => {
     id: "",
   });
 
+  // useEffect(() => {
+  //   console.log("course", JSON.stringify(course));
+  // }, [course]);
+
   const [errors, setErrors] = useState<Partial<ICourse>>({});
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [videoLoading, setVideoLoading] = useState<boolean>(false);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
 
   const uploadFile = async (
     file: File,
@@ -204,7 +210,7 @@ const CreateCourse: React.FC = () => {
         }
       );
       setErrors(validationErrorsObj);
-      console.error("Validation errors:", validationErrors);
+      console.log("Validation errors:", JSON.stringify(validationErrors));
     }
   };
 
@@ -214,10 +220,22 @@ const CreateCourse: React.FC = () => {
     isBlocked: category.isBlocked,
     image: category.image,
   }));
-
+  const isCourseModified = () => {
+    return (
+      course.courseName !== "" ||
+      course.categoryId !== "" ||
+      course.description !== "" ||
+      course.language !== "" ||
+      course.coursePrice !== 0 ||
+      course.courseDemoVideo.publicId !== "" ||
+      course.courseDemoVideo.version !== "" ||
+      course.courseThumbnailUrl !== "" ||
+      course.lessons.length > 0
+    );
+  };
   return (
     <div>
-      <div className="px-20 p-2">My course / Create course</div>
+      <div className="px-20 p-2 font-bold text-3xl">Create Course</div>
       <div>
         <div className="lg:flex px-20 gap-10">
           <div className="w-full h-full">
@@ -290,8 +308,10 @@ const CreateCourse: React.FC = () => {
                 <p>Click to select a video</p>
               )}
             </div>
-            {errors.courseDemoVideo && (
-              <div className="text-red-500">Course Demo Video is required</div>
+            {errors["courseDemoVideo.publicId"] && (
+              <div className="text-red-500">
+                {errors["courseDemoVideo.publicId"]}
+              </div>
             )}
           </div>
         </div>
@@ -388,7 +408,11 @@ const CreateCourse: React.FC = () => {
             <button
               className="border-2 p-2 my-2 w-36 rounded-lg border-orange-500 text-orange-500"
               onClick={() => {
-                navigate("/instructor/courses");
+                if (isCourseModified()) {
+                  setShowCancelModal(true);
+                } else {
+                  navigate("/instructor/courses");
+                }
               }}
             >
               Cancel
@@ -402,6 +426,36 @@ const CreateCourse: React.FC = () => {
           </div>
         </div>
       </div>
+      {showCancelModal && (
+        <Modal
+          shouldShow={showCancelModal}
+          onRequestClose={() => setShowCancelModal(false)}
+        >
+          <div className="p-4">
+            <h2 className="text-xl mb-4">
+              Are you sure you want to cancel creating this course?
+            </h2>
+            <p className="mb-4">Any unsaved changes will be lost.</p>
+            <div className="flex justify-end">
+              <button
+                className="bg-red-500 text-white p-2 rounded-lg m-2"
+                onClick={() => {
+                  setShowCancelModal(false);
+                  navigate("/instructor/courses");
+                }}
+              >
+                Yes, Cancel
+              </button>
+              <button
+                className="bg-gray-500 text-white p-2 rounded-lg m-2"
+                onClick={() => setShowCancelModal(false)}
+              >
+                No, Continue Editing
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

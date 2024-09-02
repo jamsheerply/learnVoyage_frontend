@@ -20,7 +20,6 @@ const CourseCard = ({ courseData }: CourseCardProps) => {
   }, [dispatch]);
 
   // Select category data from Redux store
-  const { categories } = useSelector((state: RootState) => state.category);
   const { userId } = useSelector((state: RootState) => state.auth);
 
   return (
@@ -49,11 +48,7 @@ const CourseCard = ({ courseData }: CourseCardProps) => {
                 </div>
                 <h5 className="text-xl mt-2">{course.courseName}</h5>
                 <div className="flex justify-between mt-2">
-                  <div>
-                    {categories.find(
-                      (category) => category.id === course.categoryId
-                    )?.categoryName || "Unknown Category"}
-                  </div>
+                  <div>{course.categoryId.categoryName}</div>
                   <div>{course.lessons?.length || 0} Lessons</div>
                 </div>
               </div>

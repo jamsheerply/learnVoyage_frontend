@@ -49,17 +49,17 @@ const data = [
   },
 ];
 
-const latestSales = [
-  { name: "Machine Learning", category: "Data Science", amount: 232 },
-  { name: "Machine Learning", category: "Data Science", amount: 232 },
-  { name: "Machine Learning", category: "Data Science", amount: 232 },
-  { name: "Machine Learning", category: "Data Science", amount: 232 },
-];
+// const latestSales = [
+//   { name: "Machine Learning", category: "Data Science", amount: 232 },
+//   { name: "Machine Learning", category: "Data Science", amount: 232 },
+//   { name: "Machine Learning", category: "Data Science", amount: 232 },
+//   { name: "Machine Learning", category: "Data Science", amount: 232 },
+// ];
 
-const projectPerformance = [
-  { name: "Adobe XD Part 01", category: "UI/UX Design" },
-  { name: "Adobe XD Part 02", category: "UI/UX Design" },
-];
+// const projectPerformance = [
+//   { name: "Adobe XD Part 01", category: "UI/UX Design" },
+//   { name: "Adobe XD Part 02", category: "UI/UX Design" },
+// ];
 
 const Dashboard: React.FC = () => {
   return (
@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Sale</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">832</div>
@@ -88,7 +88,9 @@ const Dashboard: React.FC = () => {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New Visitor</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Enrollment
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">78%</div>
@@ -120,7 +122,7 @@ const Dashboard: React.FC = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -169,8 +171,8 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        <div className="space-y-4">
-          <Card>
+        {/* <div className="space-y-4"> */}
+        {/* <Card>
             <CardHeader>
               <CardTitle>Latest Sale</CardTitle>
             </CardHeader>
@@ -195,9 +197,9 @@ const Dashboard: React.FC = () => {
                 </div>
               ))}
             </CardContent>
-          </Card>
+          </Card> */}
 
-          <Card>
+        {/* <Card>
             <CardHeader>
               <CardTitle>Project Performance</CardTitle>
             </CardHeader>
@@ -232,8 +234,8 @@ const Dashboard: React.FC = () => {
                 </div>
               ))}
             </CardContent>
-          </Card>
-        </div>
+          </Card> */}
+        {/* </div> */}
       </div>
     </div>
   );

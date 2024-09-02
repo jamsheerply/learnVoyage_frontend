@@ -212,6 +212,11 @@ const EditCourse: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
+      if (videoLoading) {
+        toast.error("video uploading");
+        console.log("videoLoading", videoLoading);
+        return;
+      }
       await schema.validate(course, { abortEarly: false });
       const response = await dispatch(updateCourse(course));
       const updatedCourse = response.payload as {
@@ -234,7 +239,11 @@ const EditCourse: React.FC = () => {
         }
       });
       setErrors(validationErrorsObj);
-      console.error("Validation errors:", validationErrors);
+      console.log("Validation errors:", JSON.stringify(validationErrors));
+      console.log(errors.courseDemoVideo);
+      if (errors.courseDemoVideo) {
+        toast.error(JSON.stringify(errors.courseDemoVideo));
+      }
     }
   };
 
@@ -271,7 +280,7 @@ const EditCourse: React.FC = () => {
 
   return (
     <div>
-      <div className="px-20 p-2">My course / Edit course</div>
+      <div className="px-20 p-2 text-3xl font-bold">Edit Course</div>
       <div>
         <div className="lg:flex px-20 gap-10">
           <div className="w-full h-full">

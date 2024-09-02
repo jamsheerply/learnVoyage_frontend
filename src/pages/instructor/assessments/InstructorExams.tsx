@@ -49,6 +49,7 @@ const InstructorExams = () => {
       });
       setTotal(response.data.data.total);
       setAssessment(response.data.data.assessments);
+      console.log(assessment);
     } catch (error) {
       console.error("Error fetching courses:", error);
     }

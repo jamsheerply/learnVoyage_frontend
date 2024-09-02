@@ -31,7 +31,7 @@ const Course = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState<number>(1);
-  const [limit] = useState<number>(5);
+  const [limit] = useState<number>(4);
   const [total, setTotal] = useState<number>(0);
   const [courses, setCourses] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<{

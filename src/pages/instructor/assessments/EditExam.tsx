@@ -37,7 +37,7 @@ interface Question {
 
 // Define the structure for the entire exam data
 interface ExamData {
-  instructorId: Types.ObjectId;
+  instructorId: Types.ObjectId | null;
   course: string;
   courseId: string;
   passingPercentage: number;
@@ -54,7 +54,7 @@ const EditExam: React.FC = () => {
   // State to hold all exam data
   const [examData, setExamData] = useState<ExamData>({
     course: "",
-    instructorId: new Types.ObjectId(""),
+    instructorId: null,
     courseId: "",
     passingPercentage: 0,
     numberOfQuestions: 0,
@@ -633,7 +633,8 @@ const Summary: React.FC<SummaryProps> = ({
       <CardContent>
         <div className="space-y-4">
           <p>
-            <strong>Course:</strong> {matchingCourse.courseName}
+            <strong>Course:</strong>{" "}
+            {matchingCourse ? matchingCourse.courseName : "Course not found"}
           </p>
           <p>
             <strong>Passing Percentage:</strong> {examData.passingPercentage}%

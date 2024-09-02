@@ -33,6 +33,9 @@ import { Card, CardContent } from "@/shadcn/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/shadcn/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/shadcn/ui/radio-group";
 import { Label } from "@/shadcn/ui/label";
+import toast from "react-hot-toast";
+import { readAssessmentByIdApi } from "@/store/api/AssessmentApi";
+import { updateResultApi } from "@/store/api/ResultApi";
 // import { createResultApi } from "@/store/api/ResultApi";
 
 interface ExamResult {
@@ -72,12 +75,13 @@ interface AssessmentEntity {
   questions: Question[];
 }
 
-// interface ResultEntity {
-//   userId: string;
-//   assessmentId: string;
-//   status: string;
-//   score: number;
-// }
+interface ResultEntity {
+  _id?: string;
+  userId: string;
+  assessmentId: string;
+  status: string;
+  score: number;
+}
 
 const ExamList: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,7 +94,8 @@ const ExamList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExamStarted, setIsExamStarted] = useState(false);
   const [assessmentId, setAssessmentId] = useState<string | undefined>();
-  const [assessment] = useState<AssessmentEntity | null>(null);
+  const [resultId, setResultId] = useState<string | undefined>();
+  const [assessment, setAssessment] = useState<AssessmentEntity | null>(null);
   const [userId] = useState<string | null>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,16 +139,29 @@ const ExamList: React.FC = () => {
     fetchResults();
   }, [fetchResults]);
 
-  const handleOpenModal = useCallback((id: string) => {
+  const handleOpenModal = useCallback((result: ExamResult) => {
     setIsModalOpen(true);
-    setAssessmentId(id);
+    setAssessmentId(result.assessmentId._id);
+    setResultId(result._id);
   }, []);
-
-  console.log("assessment", assessment);
-  console.log("assessmentId", assessmentId);
+  useEffect(() => {
+    const fetchAssessment = async (assessmentId: string) => {
+      try {
+        const response = await readAssessmentByIdApi(assessmentId);
+        console.log("response.data.data", JSON.stringify(assessment));
+        setAssessment(response.data.data);
+      } catch (error) {
+        console.error("Error fetching assessment details:", error);
+        toast.error("Failed to load exam details");
+      }
+    };
+    if (assessmentId) {
+      fetchAssessment(assessmentId);
+    }
+  }, [assessmentId]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4 ">
       {!isExamStarted ? (
         <>
           <div className="flex justify-between items-center mb-4">
@@ -175,7 +193,7 @@ const ExamList: React.FC = () => {
                 <ExamResultCard
                   key={index}
                   exam={exam}
-                  onOpenModal={() => handleOpenModal(exam._id)}
+                  onOpenModal={() => handleOpenModal(exam)}
                 />
               ))
             ) : (
@@ -218,6 +236,7 @@ const ExamList: React.FC = () => {
         </>
       ) : (
         <ExamInterface
+          resultId={resultId}
           examName={assessment?.courseId.courseName || "Exam"}
           timeLimit={assessment?.maximumTime || 60}
           questions={assessment?.questions || []}
@@ -233,7 +252,7 @@ const ExamResultCard: React.FC<{
   exam: ExamResult;
   onOpenModal: (id: string) => void;
 }> = ({ exam, onOpenModal }) => (
-  <Card className="w-full">
+  <Card className="w-full ">
     <CardContent className="flex flex-col items-start space-y-2 p-4">
       <div
         className={`w-12 h-12 rounded-lg flex items-center justify-center ${
@@ -270,9 +289,9 @@ const ExamResultCard: React.FC<{
       <div className="text-sm font-medium">{`Course: ${exam.assessmentId.courseId.courseName}`}</div>
       <div className="text-sm font-medium">{`Category: ${exam.assessmentId.courseId.categoryId.categoryName}`}</div>
       <div className="text-sm">{`Lesson: ${exam.assessmentId.courseId.lessons.length}`}</div>
-      <div className="text-sm">{`Mark: ${JSON.stringify(
+      <div className="text-sm">{`Mark: ${exam.score} / ${
         exam.assessmentId.questions.length * 10
-      )} / ${exam.score}`}</div>
+      }`}</div>
 
       {(exam.status === "failed" || exam.status === "pending") && (
         <Button
@@ -373,6 +392,7 @@ const ExamModal: React.FC<ExamModalProps> = ({
 interface ExamInterfaceProps {
   examName: string;
   timeLimit: number;
+  resultId: string;
   questions: Question[];
   userId: string;
   assessmentId: string;
@@ -381,6 +401,7 @@ interface ExamInterfaceProps {
 const ExamInterface: React.FC<ExamInterfaceProps> = ({
   examName,
   timeLimit,
+  resultId,
   questions,
   userId,
   assessmentId,
@@ -402,17 +423,16 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
         ? 10
         : 0;
     const finalScore = score + lastQuestionScore;
-    // const status =
-    //   finalScore === questions.length * 10 ? "completed" : "failed";
+    const status =
+      finalScore === questions.length * 10 ? "completed" : "failed";
 
     try {
-      // const resultData: ResultEntity = {
-      //   userId,
-      //   assessmentId,
-      //   status,
-      //   score: finalScore,
-      // };
-      // const result = await createResultApi(resultData);
+      const resultData: { _id?: string; status: string; score: number } = {
+        _id: resultId.toString(),
+        status,
+        score: finalScore,
+      };
+      const result = await updateResultApi(resultData);
       // console.log("Exam result saved:", result);
       setFinalScore(finalScore);
       setIsExamCompleted(true);
@@ -479,9 +499,9 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
   };
 
   if (isExamCompleted && finalScore !== null) {
-    console.log("Rendering ExamResults");
-    console.log("isExamCompleted", isExamCompleted);
-    console.log("finalScore", finalScore);
+    // console.log("Rendering ExamResults");
+    // console.log("isExamCompleted", isExamCompleted);
+    // console.log("finalScore", finalScore);
     return (
       <ExamResults
         score={finalScore}

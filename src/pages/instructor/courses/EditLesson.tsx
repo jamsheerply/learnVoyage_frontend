@@ -66,6 +66,8 @@ const EditLesson: React.FC = () => {
   const [errors, setErrors] = useState<ErrorState>({});
   const [showModal, setShowModal] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const [videoUploading, setVideoUploading] = useState<boolean>(false);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
 
   const { course, loading, error } = useSelector(
     (state: RootState) => state.courses
@@ -162,10 +164,12 @@ const EditLesson: React.FC = () => {
       )
     );
   };
-
   const handleFileChange = async (lessonId: number, file: File | null) => {
     if (file) {
       setUploadingLessonId(lessonId);
+      console.log(JSON.stringify(videoUploading));
+      setVideoUploading(true);
+
       try {
         const videoData = await uploadFile(file);
         setLessons((prevLessons) =>
@@ -185,6 +189,7 @@ const EditLesson: React.FC = () => {
         console.error("File upload failed:", error);
       } finally {
         setUploadingLessonId(null);
+        setVideoUploading(false);
       }
     }
   };
@@ -260,6 +265,19 @@ const EditLesson: React.FC = () => {
     } catch (error) {
       console.error("Failed to update course:", error);
     }
+  };
+
+  const handleCancelClick = () => {
+    if (videoUploading) {
+      setShowCancelModal(true);
+    } else {
+      navigate(`/instructor/edit-course/${id}`);
+    }
+  };
+
+  const confirmCancelUpload = () => {
+    setShowCancelModal(false);
+    navigate(`/instructor/edit-course/${id}`);
   };
 
   if (loading) {
@@ -385,17 +403,20 @@ const EditLesson: React.FC = () => {
       ))}
       <div className="flex justify-between">
         <button
-          className="border-green-500 text-green-500 border-2 p-3 rounded-lg my-2"
+          className={`border-2 p-3 rounded-lg my-2 ${
+            videoUploading
+              ? "border-gray-300 text-gray-300 cursor-not-allowed"
+              : "border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+          }`}
           onClick={() => handleUpdateAllLessons()}
+          disabled={videoUploading}
         >
-          Update All Lessons
+          {videoUploading ? "Uploading..." : "Update All Lessons"}
         </button>
         <div className="flex gap-4">
           <div
             className="flex border-orange-500 text-orange-500 border-2 p-2 h-10 rounded-lg my-2 cursor-pointer"
-            onClick={() => {
-              navigate(`/instructor/edit-course/${id}`);
-            }}
+            onClick={handleCancelClick}
           >
             <button className="ml-2 flex justify-center items-center">
               Cancel
@@ -431,6 +452,32 @@ const EditLesson: React.FC = () => {
                 onClick={() => setShowModal(false)}
               >
                 No
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {showCancelModal && (
+        <Modal
+          shouldShow={showCancelModal}
+          onRequestClose={() => setShowCancelModal(false)}
+        >
+          <div className="p-4">
+            <h2 className="text-xl mb-4">
+              Are you sure you want to cancel the video upload?
+            </h2>
+            <div className="flex justify-end">
+              <button
+                className="bg-red-500 text-white p-2 rounded-lg m-2 hover:bg-red-600"
+                onClick={confirmCancelUpload}
+              >
+                Yes, Cancel Upload
+              </button>
+              <button
+                className="bg-gray-500 text-white p-2 rounded-lg m-2 hover:bg-gray-600"
+                onClick={() => setShowCancelModal(false)}
+              >
+                No, Continue Upload
               </button>
             </div>
           </div>

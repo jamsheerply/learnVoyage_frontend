@@ -128,7 +128,7 @@ const StudentLayout = () => {
       {/* Main content area */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-sm py-4 px-6 flex justify-end items-center h-20 lg:justify-end">
+        <header className="bg-white shadow-sm py-4 px-6 flex justify-between items-center h-20 lg:justify-end">
           {/* Mobile menu button */}
           <div className="lg:hidden">
             <DropdownMenu>
@@ -188,7 +188,7 @@ const StudentLayout = () => {
             <div className=" flex justify-center items-center w-10 h-10">
               <Menu>
                 <Badge
-                  content={notifications.length.toString()}
+                  content={notifications.length}
                   verticalAlignment="top"
                   horizontalAlignment="right"
                   bgColor="skyblue"

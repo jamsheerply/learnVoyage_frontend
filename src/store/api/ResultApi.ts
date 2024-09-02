@@ -19,3 +19,11 @@ export const readResultByAssessmentIdApi = (assessmentId: string) => {
 export const readExamPassRateApi = () => {
   return api.get("/read/exam-pass-rate");
 };
+
+export const updateResultApi = (ResultData: {
+  _id?: string;
+  status: string;
+  score: number;
+}) => {
+  return api.patch(`update/${ResultData._id}`, ResultData);
+};
