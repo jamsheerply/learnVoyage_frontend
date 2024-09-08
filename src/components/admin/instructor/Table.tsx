@@ -105,7 +105,7 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
                 <Button
                   onClick={() => handleBlockUnblock(instructor)}
                   className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    instructor.isBlocked
+                    instructor && instructor.isBlocked
                       ? "bg-green-600 hover:bg-green-700 text-white"
                       : "bg-red-600 hover:bg-red-700 text-white"
                   }`}
