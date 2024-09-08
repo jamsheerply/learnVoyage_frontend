@@ -102,16 +102,21 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
               </td>
               {/* Action button */}
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <Button
-                  onClick={() => handleBlockUnblock(instructor)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    instructor && instructor.isBlocked
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : "bg-red-600 hover:bg-red-700 text-white"
-                  }`}
-                >
-                  {instructor.isBlocked ? "Unblock" : "Block"}
-                </Button>
+                {instructor.isBlocked ? (
+                  <Button
+                    onClick={() => handleBlockUnblock(instructor)}
+                    className="px-3 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Unblock
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleBlockUnblock(instructor)}
+                    className="px-3 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Block
+                  </Button>
+                )}
               </td>
             </tr>
           ))}
