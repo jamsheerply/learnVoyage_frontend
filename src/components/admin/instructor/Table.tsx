@@ -4,6 +4,7 @@ import { AppDispatch } from "../../../store/store";
 import { editInstructor } from "../../../store/Instructors/InstructorsActions";
 import { IUser } from "@/types/user.entity";
 import Modal from "../../instructor/courses/Modal";
+import { Button } from "@/shadcn/ui/button";
 
 interface TableProps {
   instructors: IUser[];
@@ -92,7 +93,7 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
                 <span
                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                     instructor.isBlocked
-                      ? "bg-red-100 text-red-800"
+                      ? "bg-red-400 text-red-800"
                       : "bg-green-100 text-green-800"
                   }`}
                 >
@@ -101,7 +102,7 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
               </td>
               {/* Action button */}
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
+                <Button
                   onClick={() => handleBlockUnblock(instructor)}
                   className={`px-3 py-2 rounded-md text-sm font-medium ${
                     instructor.isBlocked
@@ -110,7 +111,7 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
                   }`}
                 >
                   {instructor.isBlocked ? "Unblock" : "Block"}
-                </button>
+                </Button>
               </td>
             </tr>
           ))}

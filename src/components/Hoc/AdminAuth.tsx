@@ -10,7 +10,7 @@ interface ChildProp {
 
 const AdminAuth = ({ children }: ChildProp) => {
   const auth = useSelector((state: RootState) => state.auth);
-  console.log(auth);
+  // console.log(auth);
 
   return !auth.userId ? (
     <Navigate to="/student-auth/signin" replace />
