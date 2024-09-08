@@ -105,14 +105,42 @@ const Table: React.FC<TableProps> = ({ instructors, onInstructorUpdate }) => {
                 {instructor.isBlocked ? (
                   <Button
                     onClick={() => handleBlockUnblock(instructor)}
-                    className="px-3 py-2 rounded-md text-sm font-medium bg-green-600 hover:bg-green-700 text-white"
+                    style={{
+                      padding: "0.5rem 0.75rem",
+                      borderRadius: "0.375rem",
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      backgroundColor: "#16a34a", // Tailwind class: bg-green-600
+                      color: "white",
+                      transition: "background-color 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#15803d")
+                    } // Tailwind class: hover:bg-green-700
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#16a34a")
+                    }
                   >
                     Unblock
                   </Button>
                 ) : (
                   <Button
                     onClick={() => handleBlockUnblock(instructor)}
-                    className="px-3 py-2 rounded-md text-sm font-medium bg-red-600 hover:bg-red-700 text-white"
+                    style={{
+                      padding: "0.5rem 0.75rem",
+                      borderRadius: "0.375rem",
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      backgroundColor: "#dc2626", // Tailwind class: bg-red-600
+                      color: "white",
+                      transition: "background-color 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#b91c1c")
+                    } // Tailwind class: hover:bg-red-700
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#dc2626")
+                    }
                   >
                     Block
                   </Button>
