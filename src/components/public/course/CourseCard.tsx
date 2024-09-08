@@ -12,7 +12,7 @@ interface CourseCardProps {
     duration: string;
     studentCount: number;
     level: string;
-    lesson: [] | undefined;
+    lessons: [] | undefined;
     coursePrice: string;
     courseThumbnailUrl: string;
   };
@@ -34,7 +34,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     (category) => category.id === course.categoryId
   );
   const categoryName = category ? category.categoryName : "Unknown Category";
-
+  // console.log("course", course.lessons.length > 0);
   return (
     <div className="flex flex-col lg:flex-row w-full max-w-4xl h-64 mt-4 rounded-lg overflow-hidden border-2 border-gray-300 font-bold">
       <div className="w-full lg:w-1/3 h-full overflow-hidden bg-gray-200">

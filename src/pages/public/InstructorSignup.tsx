@@ -100,7 +100,7 @@ const InstructorSignup: React.FC = () => {
   return (
     <div className="grid grid-cols-1 min-h-screen lg:grid-cols-2">
       <div className="w-full h-full flex items-center justify-center">
-        <div className="flex-col items-end w-[80%] p-2">
+        <div className="flex-col items-end w-[80%] max-w-[350px] p-2">
           {/* <ButtonForm
             nameButton={
               <span className="flex justify-center">
@@ -166,7 +166,7 @@ const InstructorSignup: React.FC = () => {
             tailwindBBClass="bg-green-600 text-white"
             onClick={handleSignup}
           />
-          <div className="sm:px-[195px] lg:px-[130px] ">
+          <div>
             Already have an account?
             <Link to="/student-auth/signin" className="text-blue-400">
               Sign in now

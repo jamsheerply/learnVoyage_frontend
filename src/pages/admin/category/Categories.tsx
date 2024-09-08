@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import TableCategories from "../../../components/admin/category/TableCategories";
 import { AppDispatch, RootState } from "../../../store/store";
@@ -37,49 +37,53 @@ const Categories = () => {
   );
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredCategories, setFilteredCategories] = useState(categories);
-  const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
-  const [showPanel, setShowPanel] = useState<Checked>(false);
+  const [showAll, setShowAll] = useState<Checked>(true);
+  const [showActive, setShowActive] = useState<Checked>(false);
+  const [showBlocked, setShowBlocked] = useState<Checked>(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  const total = filteredCategories.length;
-  const totalPages = Math.ceil(total / limit);
 
   useEffect(() => {
     dispatch(readAllCategory());
   }, [dispatch]);
 
-  useEffect(() => {
-    setFilteredCategories(categories);
-  }, [categories]);
+  const filteredCategories = useMemo(() => {
+    return categories.filter((category) => {
+      const matchesSearch = category.categoryName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesFilter =
+        showAll ||
+        (showActive && !category.isBlocked) ||
+        (showBlocked && category.isBlocked);
+      return matchesSearch && matchesFilter;
+    });
+  }, [categories, searchTerm, showAll, showActive, showBlocked]);
 
-  useEffect(() => {
-    const filtered = categories.filter((category) =>
-      category.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCategories(filtered);
-  }, [searchTerm, categories]);
+  const total = filteredCategories.length;
+  const totalPages = Math.ceil(total / limit);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+    setPage(1);
   };
 
-  const handleFilterChange = () => {
-    const active = showStatusBar ? "active" : "";
-    const blocked = showPanel ? "blocked" : "";
-
-    const filtered = categories.filter((category) => {
-      if (active && blocked) return true;
-      if (active) return !category.isBlocked;
-      if (blocked) return category.isBlocked;
-      return true;
-    });
-    setFilteredCategories(filtered);
+  const handleFilterChange = (filter: "all" | "active" | "blocked") => {
+    if (filter === "all") {
+      setShowAll(true);
+      setShowActive(false);
+      setShowBlocked(false);
+    } else if (filter === "active") {
+      setShowAll(false);
+      setShowActive(true);
+      setShowBlocked(false);
+    } else if (filter === "blocked") {
+      setShowAll(false);
+      setShowActive(false);
+      setShowBlocked(true);
+    }
+    setPage(1);
   };
-
-  useEffect(() => {
-    handleFilterChange();
-  }, [showStatusBar, showPanel, categories]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -111,7 +115,7 @@ const Categories = () => {
       )}
       {error && <SomeWentWrong />}
       {!loading && !error && (
-        <div className="space-y-6 py-3 ">
+        <div className="space-y-6 py-3">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <h1 className="text-2xl font-semibold px-3">Categories</h1>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -133,14 +137,20 @@ const Categories = () => {
                     <DropdownMenuLabel>Status</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuCheckboxItem
-                      checked={showStatusBar}
-                      onCheckedChange={setShowStatusBar}
+                      checked={showAll}
+                      onCheckedChange={() => handleFilterChange("all")}
+                    >
+                      All
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={showActive}
+                      onCheckedChange={() => handleFilterChange("active")}
                     >
                       Active
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={showPanel}
-                      onCheckedChange={setShowPanel}
+                      checked={showBlocked}
+                      onCheckedChange={() => handleFilterChange("blocked")}
                     >
                       Blocked
                     </DropdownMenuCheckboxItem>

@@ -159,7 +159,7 @@ const CoursesList = () => {
               }}
               className="bg-green-400 hover:bg-green-600 text-white w-full sm:w-auto"
             >
-              Add Exam
+              Add Course
             </ButtonS>
           </div>
         </div>

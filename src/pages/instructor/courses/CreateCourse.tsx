@@ -171,7 +171,7 @@ const CreateCourse: React.FC = () => {
     courseName: Yup.string()
       .required("Course name is required")
       .min(3, "Course name must be at least 3 characters")
-      .max(25, "Course name must be less than 25 characters"),
+      .max(40, "Course name must be less than 40 characters"),
     categoryId: Yup.string().required("Category is required"),
     description: Yup.string()
       .required("Description is required")

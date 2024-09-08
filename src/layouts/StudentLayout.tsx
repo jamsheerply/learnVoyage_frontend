@@ -24,7 +24,7 @@ import {
 } from "@/shadcn/ui/dropdown-menu";
 import { getProfileById } from "@/store/profile/profileActions";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
-import { Badge } from "customizable-react-badges";
+// import { Badge } from "customizable-react-badges";
 import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
 import { getSender } from "@/components/admin/chat/chatLogic";
 
@@ -185,7 +185,7 @@ const StudentLayout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className=" flex justify-center items-center w-10 h-10">
+            {/* <div className=" flex justify-center items-center w-10 h-10">
               <Menu>
                 <Badge
                   content={notifications.length}
@@ -222,7 +222,7 @@ const StudentLayout = () => {
                   </MenuList>
                 </Badge>
               </Menu>
-            </div>
+            </div> */}
           </div>
         </header>
 

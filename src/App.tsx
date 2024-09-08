@@ -58,6 +58,8 @@ import InstructorExams from "./pages/instructor/assessments/InstructorExams";
 import CreateNewExam from "./pages/instructor/assessments/CreateNewExam";
 import InstructorProfile from "./pages/public/instructor/InstructorProfile";
 import EditExam from "./pages/instructor/assessments/EditExam";
+import CourseDetailsA from "./pages/admin/course/CourseDetailsA";
+import AssessmentDetails from "./pages/admin/assessments/AssessmentDetails";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -71,14 +73,13 @@ const router = createBrowserRouter(
         <Route path="payment-failed" element={<CoursePaymentFailed />} />
         <Route path="mentors" element={<MentorGrid />} />
         <Route path="mentor-profile" element={<InstructorProfile />} />
-
         <Route path="mentor-details/:id" element={<MentorDetails />} />
 
         {/* video test */}
         <Route path="video-upload" element={<VideoUpload />} />
         <Route path="video-list" element={<VideoList />} />
         <Route path="video-streaming/:id" element={<SingleVideo />} />
-
+        {/* {404 page} */}
         <Route path="*" element={<Page404 />} />
       </Route>
 
@@ -116,7 +117,7 @@ const router = createBrowserRouter(
           </InstructorAuth>
         }
       >
-        {/* <Route path="overview" element={<Dashboard />} /> */}
+        <Route path="overview" element={<Dashboard />} />
         <Route path="courses" element={<CoursesList />} />
         <Route path="create-course" element={<CreateCourse />} />
         <Route path="add-lesson/:id" element={<AddLesson />} />
@@ -143,7 +144,9 @@ const router = createBrowserRouter(
         <Route path="add-category" element={<AddCategory />} />
         <Route path="edit-category/:id" element={<EditCategory />} />
         <Route path="courses" element={<CourseListA />} />
+        <Route path="course-details/:id" element={<CourseDetailsA />} />
         <Route path="assessments" element={<AssessmentsAdmin />} />
+        <Route path="assessment-details/:id" element={<AssessmentDetails />} />
         <Route path="profile" element={<Profile />} />
         <Route path="instructors" element={<InstructorList />} />
         <Route path="transactions" element={<Transactions />} />

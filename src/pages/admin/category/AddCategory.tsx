@@ -1,18 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
-import FileUpload, {
-  UploadedFile,
-} from "../../../components/admin/category/FileUpload";
-import PacmanLoader from "react-spinners/PacmanLoader";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  createCategory,
-  updateCategory,
-} from "../../../store/category/CategoryActions";
-import { useNavigate } from "react-router-dom";
-import { AppDispatch, RootState } from "@/store/store";
+import FileUpload from "../../../components/admin/category/FileUpload";
+import { createCategory } from "../../../store/category/CategoryActions";
+import { AppDispatch } from "@/store/store";
 
 interface Category {
   categoryName: string;
@@ -21,191 +14,118 @@ interface Category {
   id: string;
 }
 
+const schema = Yup.object().shape({
+  categoryName: Yup.string()
+    .required("Category name is required")
+    .min(3, "Category name must be at least 3 characters")
+    .max(25, "Category name must be less than 25 characters"),
+  isBlocked: Yup.boolean().required("Status is required"),
+  image: Yup.string().required("Image is required").url("Must be a valid URL"),
+});
+
 const AddCategory: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const categorySelector = useSelector((state: RootState) => state.category);
+  const navigate = useNavigate();
+
   const [category, setCategory] = useState<Category>({
     categoryName: "",
     isBlocked: false,
     image: "",
     id: "",
   });
-
-  const navigate = useNavigate();
   const [errors, setErrors] = useState<Partial<Category>>({});
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState<{ [key: string]: number }>({});
 
-  const handleFileUpload = (files: UploadedFile[]) => {
-    setUploadedFiles(files);
+  const handleFileUploaded = (url: string) => {
+    setCategory({ ...category, image: url });
+    setErrors({ ...errors, image: undefined });
   };
 
-  const schema = Yup.object().shape({
-    categoryName: Yup.string()
-      .required("Category name is required")
-      .min(3, "Category name must be at least 3 characters")
-      .max(25, "Category name must be less than 25 characters"),
-    isBlocked: Yup.boolean().required("Status is required"),
-  });
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setCategory({
+      ...category,
+      [name]: name === "isBlocked" ? value === "blocked" : value,
+    });
+    setErrors({ ...errors, [name]: undefined });
+  };
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       await schema.validate(category, { abortEarly: false });
 
-      const dispatchCategory = await dispatch(createCategory(category) as any);
-      console.log(
-        JSON.stringify(dispatchCategory.payload) + " just below dispach"
-      );
-      if (dispatchCategory.payload.error) {
-        toast.error(dispatchCategory.payload.error);
-        setLoading(false);
-        return;
+      const dispatchResult = await dispatch(createCategory(category));
+
+      console.log("dispatchResult", dispatchResult.payload);
+
+      if (!dispatchResult.payload.success) {
+        toast.error(dispatchResult.payload.error);
+      } else {
+        toast.success("Category created successfully!");
+        navigate("/admin/categories");
       }
-
-      setLoading(true);
-
-      const fileUrls: string[] = [];
-      const chunkSize = 5 * 1024 * 1024;
-
-      for (const file of uploadedFiles) {
-        let start = 0;
-        const end = file.size;
-        let chunkId = 0;
-        const fileProgress: number[] = [];
-
-        while (start < end) {
-          const chunk = file.slice(start, start + chunkSize);
-          const chunkFormData = new FormData();
-          chunkFormData.append("file", chunk);
-          chunkFormData.append("upload_preset", "tq1e949s");
-          chunkFormData.append("chunk_id", `${chunkId}`);
-          chunkFormData.append("file_id", `${file.name}`);
-
-          try {
-            const response = await axios.post(
-              "https://api.cloudinary.com/v1_1/dwcytg5ps/image/upload",
-              chunkFormData,
-              {
-                headers: {
-                  "X-Unique-Upload-Id": file.name,
-                },
-                onUploadProgress: (progressEvent) => {
-                  const total = progressEvent.total ?? 1;
-                  const percentCompleted = Math.round(
-                    (progressEvent.loaded * 100) / total
-                  );
-                  fileProgress[chunkId] = percentCompleted;
-                  setProgress((prevProgress) => ({
-                    ...prevProgress,
-                    [file.name]:
-                      fileProgress.reduce((a, b) => a + b, 0) /
-                      fileProgress.length,
-                  }));
-                },
-              }
-            );
-            if (response.data.secure_url) {
-              fileUrls.push(response.data.secure_url);
-            }
-          } catch (error) {
-            console.error("Error uploading chunk:", error);
-            toast.error(`Error uploading ${file.name}`);
-            setLoading(false);
-            return;
-          }
-
-          start += chunkSize;
-          chunkId++;
-        }
-      }
-
-      const categoryData: Category = {
-        ...category,
-        id: dispatchCategory.payload.data.id,
-        image: fileUrls[0] || "",
-      };
-
-      await dispatch(updateCategory(categoryData));
-
-      if (categorySelector.error) {
-        toast.error(categorySelector.error.error);
-        setLoading(false);
-        return;
-      }
-
-      toast.success("Category created successfully!");
-      setCategory({
-        categoryName: "",
-        isBlocked: false,
-        image: "",
-        id: "",
-      });
-      setUploadedFiles([]);
-      navigate("/admin/categories");
     } catch (validationErrors) {
-      const errors: Partial<Category> = {};
-      (validationErrors as Yup.ValidationError).inner.forEach((error: any) => {
-        errors[error.path as keyof Category] = error.message;
-      });
-      setErrors(errors);
+      if (validationErrors instanceof Yup.ValidationError) {
+        const newErrors: Partial<Category> = {};
+        validationErrors.inner.forEach((error) => {
+          if (error.path) {
+            newErrors[error.path as keyof Category] = error.message;
+          }
+        });
+        setErrors(newErrors);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div className="p-3 font-semibold">Categories | Add Category</div>
-      <div className="flex mx-[10%] w-[80%]">
-        <div className="w-full h-full flex justify-center my-3">
-          <div>
-            <FileUpload onFilesAdded={handleFileUpload} progress={progress} />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-semibold mb-6">Add Category</h1>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/2 flex flex-col items-center">
+          <div className="w-96 h-96 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+            <FileUpload onFileUploaded={handleFileUploaded} />
           </div>
+          {errors.image && <p className="text-red-500 mt-2">{errors.image}</p>}
         </div>
-        <div className="flex flex-col mx-36 w-[80%] my-3">
+        <div className="w-full md:w-1/2 flex flex-col">
           <input
             type="text"
+            name="categoryName"
             placeholder="Category Name"
-            className="p-3 my-3 rounded-lg"
+            className="p-2 my-2 rounded-lg border border-gray-300 w-full text-sm w-2/3"
             value={category.categoryName}
-            onChange={(e) =>
-              setCategory({ ...category, categoryName: e.target.value })
-            }
+            onChange={handleInputChange}
           />
           {errors.categoryName && (
-            <p className="text-red-500">{errors.categoryName}</p>
+            <p className="text-red-500 text-xs mb-2">{errors.categoryName}</p>
           )}
+
           <select
             name="isBlocked"
-            id="isBlocked"
-            className="my-3 rounded-lg h-12"
+            className="p-2 my-2 rounded-lg border border-gray-300 w-2/3 text-sm"
             value={category.isBlocked ? "blocked" : "active"}
-            onChange={(e) =>
-              setCategory({
-                ...category,
-                isBlocked: e.target.value === "blocked",
-              })
-            }
+            onChange={handleInputChange}
           >
             <option value="active">Active</option>
             <option value="blocked">Blocked</option>
           </select>
           {errors.isBlocked && (
-            <p className="text-red-500">{errors.isBlocked}</p>
+            <p className="text-red-500 text-xs mb-2">{errors.isBlocked}</p>
           )}
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <PacmanLoader color="#22c55e" />
-            </div>
-          ) : (
-            <button
-              onClick={handleSubmit}
-              className="p-3 flex justify-start border bg-green-500 w-20 rounded-lg my-3 text-white"
-            >
-              Submit
-            </button>
-          )}
+
+          <button
+            onClick={handleSubmit}
+            className="p-2 bg-green-500 text-white rounded-lg my-2 hover:bg-green-600 transition-colors w-full md:w-32 text-sm"
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
-import { Badge } from "customizable-react-badges";
+// import { Badge } from "customizable-react-badges";
 import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
 import { getSender } from "@/components/admin/chat/chatLogic";
 
@@ -159,7 +159,7 @@ const NavLayout = () => {
                   </Link>
                 )}
               </div>
-              <div className="flex justify-center items-center w-10 h-10 ml-2">
+              {/* <div className="flex justify-center items-center w-10 h-10 ml-2">
                 <Menu>
                   <Badge
                     content={notifications.length}
@@ -196,7 +196,7 @@ const NavLayout = () => {
                     </MenuList>
                   </Badge>
                 </Menu>
-              </div>
+              </div> */}
               <div className="ml-4 md:hidden">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}

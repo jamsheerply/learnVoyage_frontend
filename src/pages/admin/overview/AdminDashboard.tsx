@@ -20,8 +20,10 @@ import {
 import { userEntity } from "@/types/userEntity";
 import { getAllInstructorsApi } from "@/store/api/InstructorApi";
 import { ICourse } from "@/types/course.entity";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [metrics, setMetrics] = useState<{ name: string; value: number }[]>([]);
   const [topCourses, setTopCourses] = useState<ICourse[]>([]);
   const [courseStatus, setCourseStatus] = useState<EnrollmentEntity[]>([]);
@@ -67,8 +69,10 @@ const AdminDashboard: React.FC = () => {
 
     fetchData();
   }, []);
+  const handleMore = () => {
+    navigate("/admin/courses", { replace: true });
+  };
 
-  console.log("topCourses", topCourses);
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -90,9 +94,17 @@ const AdminDashboard: React.FC = () => {
 
       {topCourses.length > 0 && (
         <div>
-          <h2 className="text-xl font-semibold mb-4">Top Courses</h2>
+          <div className="flex justify-between">
+            <h2 className="text-xl font-semibold mb-4">Top Courses</h2>
+            <h2
+              className="text-xl font-semibold mb-4 cursor-pointer"
+              onClick={handleMore}
+            >
+              More
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {topCourses.map((course, index) => (
+            {topCourses.slice(0, 3).map((course, index) => (
               <Card key={index} className="overflow-hidden">
                 <div className="h-40 bg-green-600 overflow-hidden">
                   <img

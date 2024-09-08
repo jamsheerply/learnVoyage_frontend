@@ -4,46 +4,87 @@ import toast from "react-hot-toast";
 
 export interface UploadedFile extends File {
   preview: string;
+  url?: string;
 }
 
 interface FileUploadProps {
-  onFilesAdded: (files: UploadedFile[]) => void;
-  progress: { [key: string]: number };
+  onFileUploaded: (url: string) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFilesAdded, progress }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+const FileUpload: React.FC<FileUploadProps> = ({ onFileUploaded }) => {
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const uploadToCloudinary = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append(
+        "upload_preset",
+        import.meta.env.VITE_UPLOAD_PRESET as string
+      );
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUD_NAME
+        }/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (data.secure_url) {
+        return data.secure_url;
+      } else {
+        throw new Error("Failed to get secure URL from Cloudinary");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image, please try again");
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] } as Accept,
-    onDrop: (acceptedFiles) => {
-      const validFiles = acceptedFiles.filter((file) => {
-        if (!file.type.startsWith("image/")) {
-          toast.error(`File ${file.name} is not an image.`);
-          return false;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-          toast.error(`File ${file.name} exceeds the 5MB limit.`);
-          return false;
-        }
-        return true;
-      });
+    onDrop: async (acceptedFiles) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
 
-      const mappedFiles = validFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
+      if (!file.type.startsWith("image/")) {
+        toast.error(`File ${file.name} is not an image.`);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`File ${file.name} exceeds the 5MB limit.`);
+        return;
+      }
 
-      setUploadedFiles(mappedFiles);
-      onFilesAdded(mappedFiles);
+      const preview = URL.createObjectURL(file);
+      setUploadedFile({ ...file, preview });
+
+      try {
+        const url = await uploadToCloudinary(file);
+        setUploadedFile((prevFile) => (prevFile ? { ...prevFile, url } : null));
+        onFileUploaded(url);
+      } catch (error) {
+        // Error is already handled in uploadToCloudinary
+      }
     },
   });
 
   useEffect(() => {
-    return () =>
-      uploadedFiles.forEach((file) => URL.revokeObjectURL(file.preview));
-  }, [uploadedFiles]);
+    return () => {
+      if (uploadedFile) {
+        URL.revokeObjectURL(uploadedFile.preview);
+      }
+    };
+  }, [uploadedFile]);
 
   return (
     <div
@@ -51,26 +92,24 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFilesAdded, progress }) => {
       className="border-2 border-dashed border-gray-300 rounded p-6 h-[250px] flex items-center justify-center cursor-pointer"
     >
       <input {...getInputProps()} />
-      {!uploadedFiles.length && (
-        <p>Drag and drop image files here. Size limit is 5MB.</p>
+      {!uploadedFile && (
+        <p>
+          Drag and drop an image file here, or click to select. Size limit is
+          5MB.
+        </p>
       )}
-      <ul className="list-none p-0">
-        {uploadedFiles.map((file) => (
-          <li key={file.name} className="flex flex-col items-center m-2">
-            <img
-              src={file.preview}
-              alt={file.name}
-              className="w-full h-auto object-cover"
-            />
-            <div className="w-full bg-gray-200 h-2 mt-1">
-              <div
-                className="bg-blue-500 h-2"
-                style={{ width: `${progress[file.name] || 0}%` }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
+      {uploadedFile && (
+        <div className="flex flex-col items-center">
+          <img
+            src={uploadedFile.preview}
+            alt={uploadedFile.name}
+            className="w-full h-auto object-cover max-h-[200px]"
+          />
+          <p className="mt-2">
+            {isUploading ? "Uploading..." : uploadedFile.url ? "" : ""}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

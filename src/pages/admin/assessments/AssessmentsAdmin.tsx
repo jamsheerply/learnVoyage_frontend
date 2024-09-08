@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ListFilter, Search } from "lucide-react";
 import { useDebounce } from "@/custom Hooks/hooks";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllInstructorsList } from "@/store/Instructors/InstructorsActions";
 import { Input } from "@/shadcn/ui/input";
-import { Button } from "@/shadcn/ui/button";
+import { Button as ButtonS } from "@/shadcn/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -24,18 +23,70 @@ import {
   CardTitle,
 } from "@/shadcn/ui/card";
 import { format } from "date-fns";
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
+import CourseFilter from "@/components/public/course/CourseFilter";
+import { readAllCategory } from "@/store/category/CategoryActions";
+import { useNavigate } from "react-router-dom";
 
 const AssessmentsAdmin = () => {
-  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 500);
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
   const [total, setTotal] = useState(0);
   const [assessment, setAssessment] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [selectedInstructors, setSelectedInstructors] = useState<{
+    [key: string]: boolean;
+  }>({});
+
+  useEffect(() => {
+    dispatch(readAllCategory());
+    dispatch(getAllInstructorsList());
+  }, [dispatch]);
+  const { categories } = useSelector((state: RootState) => state.category);
+  const { instructors } = useSelector((state: RootState) => state.instructors);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryChange = (name: string) => {
+    setSelectedCategories((prevState) => ({
+      ...prevState,
+      [name]: !prevState[name],
+    }));
+  };
+
+  const handleInstructorChange = (name: string) => {
+    setSelectedInstructors((prevState) => ({
+      ...prevState,
+      [name]: !prevState[name],
+    }));
+  };
 
   const fetchAssessment = async () => {
     try {
+      const selectedCategoryIds = Object.keys(selectedCategories).filter(
+        (key) => selectedCategories[key]
+      );
+      const selectedInstructorIds = Object.keys(selectedInstructors).filter(
+        (key) => selectedInstructors[key]
+      );
       const baseURL = `${import.meta.env.VITE_BASE_URL}/content-management`;
       const api = axios.create({
         baseURL: baseURL,
@@ -46,6 +97,11 @@ const AssessmentsAdmin = () => {
           page,
           limit,
           search: debouncedSearch || "",
+          category:
+            selectedCategoryIds.length > 0
+              ? selectedCategoryIds.join(",")
+              : "All",
+          instructor: selectedInstructorIds.join(","),
         },
       });
       setTotal(response.data.data.total);
@@ -57,7 +113,7 @@ const AssessmentsAdmin = () => {
 
   useEffect(() => {
     fetchAssessment();
-  }, [page, limit, debouncedSearch]);
+  }, [page, limit, debouncedSearch, selectedCategories, selectedInstructors]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -66,69 +122,101 @@ const AssessmentsAdmin = () => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Assessments</h1>
-        <div className="flex items-center space-x-2">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+    <>
+      <div className="container mx-auto px-4 ">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Assessments</h1>
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="pl-10"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+            </div>
+            <div className="bg-green-100 rounded-sm">
+              <Button colorScheme="#dcfce7" onClick={onOpen}>
+                <ListFilter className="cursor-pointer text-green-500 " />
+              </Button>
+            </div>
           </div>
-          <Button
-            onClick={() => {
-              navigate("/instructor/create-exam");
-            }}
-            className="bg-green-500 hover:bg-green-600 text-white w-full sm:w-auto"
-          >
-            Add Exam
-          </Button>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AssessmentCard assessment={assessment} />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AssessmentCard assessment={assessment} />
+        </div>
 
-      {total > limit && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationPrevious
-              onClick={() => handlePageChange(Math.max(1, page - 1))}
-              href="#"
+        {total > limit && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationPrevious
+                onClick={() => handlePageChange(Math.max(1, page - 1))}
+                href="#"
+              />
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={`page-${index + 1}`}>
+                  <PaginationLink
+                    href="#"
+                    onClick={() => handlePageChange(index + 1)}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationNext
+                onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
+                href="#"
+              />
+            </PaginationContent>
+          </Pagination>
+        )}
+      </div>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Filter</DrawerHeader>
+
+          <DrawerBody className="font-bold">
+            <CourseFilter
+              header="Course Category"
+              data={categories.map((category) => ({
+                name: category.categoryName,
+                count: 0,
+                id: category.id,
+              }))}
+              selectedItems={selectedCategories}
+              onItemChange={handleCategoryChange}
             />
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={`page-${index + 1}`}>
-                <PaginationLink
-                  href="#"
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationNext
-              onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
-              href="#"
+            <CourseFilter
+              header="Instructor"
+              data={instructors.map((instructor) => ({
+                name: `${instructor.firstName} ${instructor.lastName}`,
+                count: 0,
+                id: instructor.id,
+              }))}
+              selectedItems={selectedInstructors}
+              onItemChange={handleInstructorChange}
             />
-          </PaginationContent>
-        </Pagination>
-      )}
-    </div>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 
 const AssessmentCard = ({ assessment }) => {
   const dispatch: AppDispatch = useDispatch();
-
+  const navigate = useNavigate();
+  const handleNavigate = (id) => {
+    navigate(`/admin/assessment-details/${id}`);
+  };
   useEffect(() => {
     dispatch(getAllInstructorsList());
   }, [dispatch]);
@@ -218,9 +306,14 @@ const AssessmentCard = ({ assessment }) => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+              <ButtonS
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={() => {
+                  handleNavigate(assess._id);
+                }}
+              >
                 View Details
-              </Button>
+              </ButtonS>
             </CardFooter>
           </Card>
         );

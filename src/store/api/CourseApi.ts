@@ -13,6 +13,9 @@ export const api: AxiosInstance = axios.create({
 export const getAllCourseApi = () => {
   return api.get("/read");
 };
+export const getAllCourseAdminApi = () => {
+  return api.get("/read-Admin");
+};
 
 export const createCourseApi = (courseData: ICourse) => {
   return api.post("/create", courseData);
@@ -24,4 +27,8 @@ export const updatedCourseApi = (courseData: ICourse) => {
 
 export const readByIdCourseApi = (id: string) => {
   return api.get(`/read/${id}`);
+};
+
+export const totalCourseApi = () => {
+  return api.get("/read/total-course");
 };

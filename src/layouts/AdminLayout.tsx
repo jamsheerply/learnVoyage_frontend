@@ -45,7 +45,7 @@ import { searchUserApi } from "@/store/api/ChatApi";
 import { accessChat, fetchChats } from "@/store/chat/chatsActions";
 import { getSender } from "@/components/admin/chat/chatLogic";
 import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
-import { Badge } from "customizable-react-badges";
+// import { Badge } from "customizable-react-badges";
 
 const AdminLayout: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -250,7 +250,7 @@ const AdminLayout: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <div className="flex justify-center items-center w-10 h-10">
+              {/* <div className="flex justify-center items-center w-10 h-10">
                 <Menu>
                   <Badge
                     content={notifications.length}
@@ -287,7 +287,7 @@ const AdminLayout: React.FC = () => {
                     </MenuList>
                   </Badge>
                 </Menu>
-              </div>
+              </div> */}
             </div>
           </div>
         </header>

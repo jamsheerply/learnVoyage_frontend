@@ -29,7 +29,7 @@ const CourseCardA = ({ courseData }: CourseCardProps) => {
           key={course.id}
           className="rounded-xl shadow-lg p-4 bg-gray-100"
           onClick={() => {
-            navigate(`/instructor/edit-course/${course.id}`);
+            navigate(`/admin/course-details/${course.id}`, { replace: true });
           }}
         >
           <div className=" flex flex-col bg-gray-100">

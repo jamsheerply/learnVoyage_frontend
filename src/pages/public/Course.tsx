@@ -19,14 +19,18 @@ import { getAllInstructorsList } from "@/store/Instructors/InstructorsActions";
 import { Input } from "@/shadcn/ui/input";
 import axios from "axios";
 import { baseURLCourse } from "@/store/api/CourseApi";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useDebounce } from "@/custom Hooks/hooks";
 import CourseCardSkeleton from "@/components/public/course/CourseCardSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn/ui/select";
 
 const Course = () => {
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -43,6 +47,7 @@ const Course = () => {
   const [selectedPrices, setSelectedPrices] = useState<{
     [key: string]: boolean;
   }>({});
+  const [sortBy, setSortBy] = useState<string>("");
 
   const [courseLoading, setCourseLoading] = useState<boolean>(false);
 
@@ -52,39 +57,6 @@ const Course = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setSearchTerm(params.get("search") || "");
-    setPage(Number(params.get("page")) || 1);
-    setSelectedCategories(
-      params
-        .get("category")
-        ?.split(",")
-        .reduce((acc, category) => {
-          acc[category] = true;
-          return acc;
-        }, {} as { [key: string]: boolean }) || {}
-    );
-    setSelectedInstructors(
-      params
-        .get("instructor")
-        ?.split(",")
-        .reduce((acc, instructor) => {
-          acc[instructor] = true;
-          return acc;
-        }, {} as { [key: string]: boolean }) || {}
-    );
-    setSelectedPrices(
-      params
-        .get("price")
-        ?.split(",")
-        .reduce((acc, price) => {
-          acc[price] = true;
-          return acc;
-        }, {} as { [key: string]: boolean }) || {}
-    );
-  }, [location.search]);
-
-  useEffect(() => {
     fetchCourses();
   }, [
     page,
@@ -92,6 +64,7 @@ const Course = () => {
     selectedCategories,
     selectedInstructors,
     selectedPrices,
+    sortBy,
   ]);
 
   const { categories } = useSelector((state: RootState) => state.category);
@@ -124,31 +97,11 @@ const Course = () => {
     }));
   };
 
-  const updateUrlParams = () => {
-    const params = new URLSearchParams();
-    params.set("page", String(page));
-    if (searchTerm) params.set("search", debouncedSearch);
-    const selectedCategoryKeys = Object.keys(selectedCategories).filter(
-      (key) => selectedCategories[key]
-    );
-    if (selectedCategoryKeys.length)
-      params.set("category", selectedCategoryKeys.join(","));
-    const selectedInstructorKeys = Object.keys(selectedInstructors).filter(
-      (key) => selectedInstructors[key]
-    );
-    if (selectedInstructorKeys.length)
-      params.set("instructor", selectedInstructorKeys.join(","));
-    const selectedPriceKeys = Object.keys(selectedPrices).filter(
-      (key) => selectedPrices[key]
-    );
-    if (selectedPriceKeys.length)
-      params.set("price", selectedPriceKeys.join(","));
-
-    navigate(`?${params.toString()}`);
+  const handleSortChange = (value: string) => {
+    setSortBy(value === "default" ? "" : value);
   };
 
   const fetchCourses = async () => {
-    updateUrlParams();
     try {
       const selectedCategoryIds = Object.keys(selectedCategories).filter(
         (key) => selectedCategories[key]
@@ -172,13 +125,14 @@ const Course = () => {
           instructor: selectedInstructorIds.join(","),
           price:
             selectedPriceIds.length > 0 ? selectedPriceIds.join(",") : "All",
+          sort: sortBy || undefined,
         },
       });
       if (response.data.data.courses) {
         setCourseLoading(false);
       }
       setCourses(response.data.data.courses);
-      console.log(JSON.stringify(response.data.data.courses));
+      // console.log(JSON.stringify(response.data.data.courses));
       setTotal(response.data.data.total);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -210,6 +164,7 @@ const Course = () => {
               <div className="text-center mt-20">No courses available</div>
             ) : (
               courses.map((course) => (
+                //course.lessons.length> O only send to
                 <CourseCard key={course.id} course={course} />
               ))
             )}
@@ -248,6 +203,26 @@ const Course = () => {
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
+            </div>
+            <div className="mt-4">
+              <Select onValueChange={handleSortChange} value={sortBy}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">None </SelectItem>
+                  <SelectItem value="price_asc">Price: Low to High</SelectItem>
+                  <SelectItem value="price_desc">Price: High to Low</SelectItem>
+                  <SelectItem value="name_asc">Name: A to Z</SelectItem>
+                  <SelectItem value="name_desc">Name: Z to A</SelectItem>
+                  {/* <SelectItem value="rating_asc">
+                    Rating: Low to High
+                  </SelectItem>
+                  <SelectItem value="rating_desc">
+                    Rating: High to Low
+                  </SelectItem> */}
+                </SelectContent>
+              </Select>
             </div>
             <CourseFilter
               header="Course Category"

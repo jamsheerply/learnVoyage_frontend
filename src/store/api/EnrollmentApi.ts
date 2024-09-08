@@ -40,3 +40,15 @@ export const readTopCoursesApi = () => {
 export const readCoursesStatusApi = () => {
   return api.get("/read/courses-status");
 };
+
+export const totalEnrollmentsApi = () => {
+  return api.get("/read/total-enrollment");
+};
+
+export const totalRevenueApi = () => {
+  return api.get("/read/total-revenue");
+};
+
+export const topEnrollmentApi = () => {
+  return api.get("/read/top-enrollment");
+};

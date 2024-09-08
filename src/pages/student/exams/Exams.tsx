@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios, { AxiosInstance } from "axios";
 import { useDebounce } from "@/custom Hooks/hooks";
 import { Input } from "@/shadcn/ui/input";
@@ -36,6 +36,7 @@ import { Label } from "@/shadcn/ui/label";
 import toast from "react-hot-toast";
 import { readAssessmentByIdApi } from "@/store/api/AssessmentApi";
 import { updateResultApi } from "@/store/api/ResultApi";
+import { AssessmentEntity } from "@/types/assessmentEntity";
 // import { createResultApi } from "@/store/api/ResultApi";
 
 interface ExamResult {
@@ -66,14 +67,14 @@ interface Question {
   answer: string;
 }
 
-interface AssessmentEntity {
-  _id: string;
-  courseId: {
-    courseName: string;
-  };
-  maximumTime: number;
-  questions: Question[];
-}
+// interface AssessmentEntity {
+//   _id: string;
+//   courseId: {
+//     courseName: string;
+//   };
+//   maximumTime: number;
+//   questions: Question[];
+// }
 
 interface ResultEntity {
   _id?: string;
@@ -112,6 +113,10 @@ const ExamList: React.FC = () => {
   };
 
   const totalPages = Math.ceil(total / limit);
+  const handleExamCompleted = () => {
+    setIsExamStarted(false);
+    console.log("hai");
+  };
 
   const fetchResults = useCallback(async () => {
     try {
@@ -133,7 +138,7 @@ const ExamList: React.FC = () => {
     } catch (error) {
       console.error("Error fetching results:", error);
     }
-  }, [page, limit, debouncedSearch, selectedStatus]);
+  }, [page, limit, debouncedSearch, selectedStatus, isExamStarted]);
 
   useEffect(() => {
     fetchResults();
@@ -148,7 +153,6 @@ const ExamList: React.FC = () => {
     const fetchAssessment = async (assessmentId: string) => {
       try {
         const response = await readAssessmentByIdApi(assessmentId);
-        console.log("response.data.data", JSON.stringify(assessment));
         setAssessment(response.data.data);
       } catch (error) {
         console.error("Error fetching assessment details:", error);
@@ -242,6 +246,8 @@ const ExamList: React.FC = () => {
           questions={assessment?.questions || []}
           userId={userId!}
           assessmentId={assessment?._id}
+          examCompleted={handleExamCompleted}
+          assessment={assessment}
         />
       )}
     </div>
@@ -396,6 +402,8 @@ interface ExamInterfaceProps {
   questions: Question[];
   userId: string;
   assessmentId: string;
+  examCompleted: () => void;
+  assessment: AssessmentEntity;
 }
 
 const ExamInterface: React.FC<ExamInterfaceProps> = ({
@@ -405,6 +413,8 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
   questions,
   userId,
   assessmentId,
+  examCompleted,
+  assessment,
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -432,8 +442,8 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
         status,
         score: finalScore,
       };
-      const result = await updateResultApi(resultData);
-      // console.log("Exam result saved:", result);
+      await updateResultApi(resultData);
+
       setFinalScore(finalScore);
       setIsExamCompleted(true);
     } catch (error) {
@@ -488,25 +498,26 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
     });
   };
 
-  const handleRetry = () => {
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setScore(0);
-    setTimeLeft(timeLimit * 60);
-    setIsExamCompleted(false);
-    setError(null);
-    setFinalScore(null);
+  // const handleRetry = () => {
+  //   setCurrentQuestionIndex(0);
+  //   setSelectedAnswer(null);
+  //   setScore(0);
+  //   setTimeLeft(timeLimit * 60);
+  //   setIsExamCompleted(false);
+  //   setError(null);
+  //   setFinalScore(null);
+  // };
+  const handleExamCompleted = () => {
+    examCompleted();
   };
-
   if (isExamCompleted && finalScore !== null) {
-    // console.log("Rendering ExamResults");
-    // console.log("isExamCompleted", isExamCompleted);
-    // console.log("finalScore", finalScore);
     return (
       <ExamResults
         score={finalScore}
         totalQuestions={questions.length}
-        onRetry={handleRetry}
+        // onRetry={handleRetry}
+        examCompleted={handleExamCompleted}
+        assessment={assessment}
       />
     );
   }
@@ -572,17 +583,17 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
 const ExamResults: React.FC<{
   score: number;
   totalQuestions: number;
-  onRetry: () => void;
-}> = ({ score, totalQuestions, onRetry }) => {
-  const navigate = useNavigate();
+  // onRetry: () => void;
+  examCompleted: () => void;
+  assessment: AssessmentEntity;
+}> = ({ score, totalQuestions, examCompleted, assessment }) => {
+  // const navigate = useNavigate();
   const correctAnswers = Math.round(score / 10);
   const wrongAnswers = totalQuestions - correctAnswers;
   const status =
-    score === 0
+    (score / (totalQuestions * 10)) * 100 < assessment.passingPercentage
       ? "Failed"
-      : score === totalQuestions * 10
-      ? "Passed"
-      : "Completed";
+      : "Passed";
   const statusColor =
     status === "Failed"
       ? "text-red-500"
@@ -591,7 +602,8 @@ const ExamResults: React.FC<{
       : "text-yellow-500";
 
   const handleFinish = () => {
-    navigate("/student/exams");
+    examCompleted();
+    // navigate("/student/exams");
   };
 
   return (
@@ -666,22 +678,12 @@ const ExamResults: React.FC<{
             </span>
           </div>
         </div>
-
-        {status === "Failed" ? (
-          <Button
-            onClick={onRetry}
-            className="w-full bg-red-500 hover:bg-red-600 text-white"
-          >
-            Retry Exam
-          </Button>
-        ) : (
-          <Button
-            onClick={handleFinish}
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
-          >
-            Finish
-          </Button>
-        )}
+        <Button
+          onClick={handleFinish}
+          className="w-full bg-green-500 hover:bg-green-600 text-white"
+        >
+          Finish
+        </Button>
       </CardContent>
     </Card>
   );

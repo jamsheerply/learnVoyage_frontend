@@ -13,14 +13,18 @@ const Home: React.FC = () => {
   const [topMentors, setTopMentors] = useState<userEntity[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const topCourse = await readTopCoursesApi();
-      setTopCourses(topCourse.data.data);
-      const topMentorsData = await getAllInstructorsApi();
+    try {
+      const fetchData = async () => {
+        const topCourse = await readTopCoursesApi();
+        setTopCourses(topCourse.data.data);
+        const topMentorsData = await getAllInstructorsApi();
 
-      setTopMentors(topMentorsData.data.data);
-    };
-    fetchData();
+        setTopMentors(topMentorsData.data.data);
+      };
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
   return (
     <div>

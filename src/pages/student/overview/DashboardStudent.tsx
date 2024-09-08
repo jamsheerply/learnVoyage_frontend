@@ -57,6 +57,10 @@ const DashboardStudent: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const completedCoursesData = await readCompletedCoursesApi();
+      console.log(
+        "completedCoursesData.data.data",
+        completedCoursesData.data.data
+      );
       setCompletedCourses(completedCoursesData.data.data);
       const examPassRate = await readExamPassRateApi();
       setExamPassRate(examPassRate.data.data);

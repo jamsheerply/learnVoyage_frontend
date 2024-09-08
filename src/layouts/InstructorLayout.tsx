@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu";
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
-import { Badge } from "customizable-react-badges";
+// import { Badge } from "customizable-react-badges";
 import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
 import { getSender } from "@/components/admin/chat/chatLogic";
 
@@ -80,7 +80,7 @@ const InstructorLayout = () => {
   };
 
   const navItems = [
-    // { name: "Overview", path: "/instructor/overview", icon: Home },
+    { name: "Overview", path: "/instructor/overview", icon: Home },
     { name: "Courses", path: "/instructor/courses", icon: BookOpen },
     { name: "Exams", path: "/instructor/exams", icon: Book },
     { name: "Analytics", path: "/instructor/analytics", icon: Settings },
@@ -183,7 +183,7 @@ const InstructorLayout = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className=" flex justify-center items-center w-10 h-10">
+            {/* <div className=" flex justify-center items-center w-10 h-10">
               <Menu>
                 <Badge
                   content={notifications.length}
@@ -220,7 +220,7 @@ const InstructorLayout = () => {
                   </MenuList>
                 </Badge>
               </Menu>
-            </div>
+            </div> */}
           </div>
         </header>
 

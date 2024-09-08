@@ -18,11 +18,17 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   useDisclosure,
 } from "@chakra-ui/react";
 import axios, { AxiosInstance } from "axios";
-import { ListFilter } from "lucide-react";
+import { Calendar, Download, ListFilter } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Transactions() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,6 +44,8 @@ function Transactions() {
   const [selectedStatus, setSelectedStatus] = useState<{
     [key: string]: boolean;
   }>({});
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
   const method = ["card", "upi"];
   const status = ["pending", "completed", "failed"];
@@ -103,13 +111,71 @@ function Transactions() {
   };
 
   const totalPages = Math.ceil(total / limit);
+  const handleDownload = async (format) => {
+    try {
+      const baseURL = `${import.meta.env.VITE_BASE_URL}/payment-service`;
+      const api: AxiosInstance = axios.create({
+        baseURL: baseURL,
+        withCredentials: true,
+      });
 
+      const response = await api.get(`/download/${format}`, {
+        params: {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `transactions.${format}`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error downloading transactions:", error);
+    }
+  };
+  console.log("transactions", transactions);
   return (
     <>
       <div className="p-6">
         <div className=" flex justify-between">
           <h2 className="text-2xl font-semibold mb-4">Transactions</h2>
           <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Calendar className="text-gray-500" />
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                className="border p-2 rounded"
+              />
+              <span>to</span>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                className="border p-2 rounded"
+              />
+            </div>
+            <Menu>
+              <MenuButton as={Button} rightIcon={<Download />}>
+                Download
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={() => handleDownload("pdf")}>PDF</MenuItem>
+                <MenuItem onClick={() => handleDownload("xlsx")}>
+                  Excel
+                </MenuItem>
+              </MenuList>
+            </Menu>
             <div>
               <Input
                 placeholder="Search"

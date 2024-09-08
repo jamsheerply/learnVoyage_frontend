@@ -174,7 +174,7 @@ function EnrollmentListDetail() {
             const resultData = await readResultByAssessmentIdApi(
               assessmentData.data.data._id
             );
-            console.log("resultData.data", resultData.data);
+
             setAssessmentStatus(resultData.data.success ? "continue" : "start");
           }
         } catch (error) {
@@ -218,9 +218,8 @@ function EnrollmentListDetail() {
         review: comments,
       };
 
-      const reviewReponse = await createReviewApi(reviewData);
+      await createReviewApi(reviewData);
       setIsAlreadyReview(true);
-      console.log("reviewReponse", reviewReponse.data);
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
         const newErrors = {};
@@ -254,14 +253,10 @@ function EnrollmentListDetail() {
       ) {
         setAllLessonsCompleted(true);
       }
-      console.log(
-        "enrollment",
-        JSON.stringify(enrollment.courseId.lessons?.length)
-      );
-      console.log("competedLesssons");
-      console.log(Array.from(completedLessons).length);
     }
   }, [completedLessons]);
+
+  console.log("assessment", assessment);
 
   if (!enrollment) {
     return <div>Loading...</div>;
@@ -428,6 +423,7 @@ function EnrollmentListDetail() {
           questions={assessment?.questions || []}
           userId={userId!}
           assessmentId={assessment?._id.toString()}
+          assessment={assessment}
         />
       )}
     </div>
@@ -509,9 +505,10 @@ interface ExamInterfaceProps {
     options: string[];
     answer: string;
   }[];
-  onComplete: (score: number) => void;
+  // onComplete: (score: number) => void;
   userId: string;
   assessmentId: string;
+  assessment: AssessmentEntity;
 }
 
 const ExamInterface: React.FC<ExamInterfaceProps> = ({
@@ -520,6 +517,7 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
   questions,
   userId,
   assessmentId,
+  assessment,
 }) => {
   // const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -550,7 +548,7 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
         score: finalScore,
       };
       const result = await createResultApi(resultData);
-      console.log("Exam result saved:", result);
+
       setFinalScore(finalScore);
       setIsExamCompleted(true);
     } catch (error) {
@@ -605,25 +603,25 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
     });
   };
 
-  const handleRetry = () => {
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
-    setScore(0);
-    setTimeLeft(timeLimit * 60);
-    setIsExamCompleted(false);
-    setError(null);
-    setFinalScore(null);
-  };
+  // const handleRetry = () => {
+  //   setCurrentQuestionIndex(0);
+  //   setSelectedAnswer(null);
+  //   setScore(0);
+  //   setTimeLeft(timeLimit * 60);
+  //   setIsExamCompleted(false);
+  //   setError(null);
+  //   setFinalScore(null);
+  // };
+
+  console.log("assessment inside exam", assessment);
 
   if (isExamCompleted && finalScore !== null) {
-    console.log("Rendering ExamResults");
-    console.log("isExamCompleted", isExamCompleted);
-    console.log("finalScore", finalScore);
     return (
       <ExamResults
         score={finalScore}
         totalQuestions={questions.length}
-        onRetry={handleRetry}
+        assessment={assessment}
+        // onRetry={handleRetry}
       />
     );
   }
@@ -689,17 +687,18 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({
 const ExamResults: React.FC<{
   score: number;
   totalQuestions: number;
-  onRetry: () => void;
-}> = ({ score, totalQuestions, onRetry }) => {
+  assessment: AssessmentEntity;
+  // onRetry: () => void;
+}> = ({ score, totalQuestions, assessment }) => {
   const navigate = useNavigate();
   const correctAnswers = Math.round(score / 10);
   const wrongAnswers = totalQuestions - correctAnswers;
+  console.log("assessment inside examResult", assessment.passingPercentage);
+  console.log("score", (score / (totalQuestions * 10)) * 100);
   const status =
-    score === 0
+    (score / (totalQuestions * 10)) * 100 < assessment.passingPercentage
       ? "Failed"
-      : score === totalQuestions * 10
-      ? "Passed"
-      : "Completed";
+      : "Passed";
   const statusColor =
     status === "Failed"
       ? "text-red-500"
@@ -784,21 +783,21 @@ const ExamResults: React.FC<{
           </div>
         </div>
 
-        {status === "Failed" ? (
+        {/* {status === "Failed" ? (
           <Button
             onClick={onRetry}
             className="w-full bg-red-500 hover:bg-red-600 text-white"
           >
             Retry Exam
           </Button>
-        ) : (
-          <Button
-            onClick={handleFinish}
-            className="w-full bg-green-500 hover:bg-green-600 text-white"
-          >
-            Finish
-          </Button>
-        )}
+        ) : ( */}
+        <Button
+          onClick={handleFinish}
+          className="w-full bg-green-500 hover:bg-green-600 text-white"
+        >
+          Finish
+        </Button>
+        {/* )} */}
       </CardContent>
     </Card>
   );
