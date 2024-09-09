@@ -17,7 +17,9 @@ interface CourseCardProps {
     courseThumbnailUrl: string;
   };
 }
-
+const getRandomCount = (min = 1, max = 10) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const navigate = useNavigate();
   const { instructors } = useSelector((state: RootState) => state.instructors);
@@ -50,10 +52,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
           <h2 className="text-lg font-semibold mt-1">{course.courseName}</h2>
           <h3 className="text-sm mt-1">Category: {categoryName}</h3>
           <div className="flex flex-wrap gap-3 mt-2 text-sm">
-            <span>{course.duration || "2"} week</span>
-            <span>{course.studentCount || 40} students</span>
+            <span>{course.duration || getRandomCount()} week</span>
+            <span>{course.studentCount || getRandomCount()} students</span>
             <span>{course.level || "beginner"}</span>
-            <span>{course.lesson ? course.lesson.length : 0} Lessons</span>
+            <span>{course.lessons ? course.lessons.length : 0} Lessons</span>
           </div>
         </div>
         <div className="flex justify-between items-center border-t-2 border-gray-200 pt-2 mt-2">

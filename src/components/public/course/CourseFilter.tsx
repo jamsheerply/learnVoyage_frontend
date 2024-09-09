@@ -28,7 +28,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
               />
               {item.name}
             </h5>
-            <h5>{item.count}</h5>
+            {/* <h5>{item.count}</h5> */}
           </div>
         ))}
     </>

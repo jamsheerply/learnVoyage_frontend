@@ -143,7 +143,7 @@ const AdminLayout: React.FC = () => {
       {/* Sidebar for large screens */}
       <aside className="bg-green-100 w-64 flex-shrink-0 hidden lg:block overflow-y-auto">
         <div className="h-full flex flex-col">
-          <div className="text-green-600 text-4xl font-semibold text-center my-6">
+          <div className="text-green-600 text-4xl font-semibold text-center my-6 ">
             Admin
           </div>
           <nav className="flex-1 flex flex-col items-center">
@@ -222,7 +222,7 @@ const AdminLayout: React.FC = () => {
             </div>
 
             {/* User profile and notifications */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 mx-7">
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <div className="text-base font-semibold flex items-center">

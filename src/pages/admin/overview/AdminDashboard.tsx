@@ -29,6 +29,12 @@ const AdminDashboard: React.FC = () => {
   const [courseStatus, setCourseStatus] = useState<EnrollmentEntity[]>([]);
   const [topMentors, setTopMentors] = useState<userEntity[]>([]);
 
+  const getAvatarSrc = (avatarUrl) => {
+    return avatarUrl && avatarUrl.trim() !== ""
+      ? avatarUrl
+      : "https://avatar.iran.liara.run/public/boy?username=Ash";
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,7 +55,7 @@ const AdminDashboard: React.FC = () => {
           },
           {
             name: "Total Instructors",
-            value: totalStudentsAndInstructors.data.data.totalIntructors,
+            value: totalStudentsAndInstructors.data.data.totalInstructors,
           },
         ]);
 
@@ -145,7 +151,17 @@ const AdminDashboard: React.FC = () => {
       )}
 
       <div>
-        <h2 className="text-xl font-semibold mb-4">Course Status</h2>
+        <div className="flex justify-between">
+          <h2 className="text-xl font-semibold mb-4">Course Status</h2>
+          <h2
+            className="text-xl font-semibold mx-2"
+            onClick={() => {
+              navigate("/admin/courses");
+            }}
+          >
+            More
+          </h2>
+        </div>
         <Card>
           <Table>
             <TableHeader>
@@ -158,7 +174,7 @@ const AdminDashboard: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courseStatus.map((course, index) => (
+              {courseStatus.slice(0, 6).map((course, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">
                     {course.courseName}
@@ -193,7 +209,7 @@ const AdminDashboard: React.FC = () => {
           {topMentors.map((mentor, index) => (
             <Card key={index} className="overflow-hidden">
               <img
-                src={mentor.profile.avatar}
+                src={getAvatarSrc(mentor.profile.avatar)}
                 alt={`${mentor.firstName}${mentor.lastName}`}
                 className="w-full h-40 object-cover"
               />

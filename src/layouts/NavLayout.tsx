@@ -17,17 +17,49 @@ import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu";
 // import { Badge } from "customizable-react-badges";
 import { setNotification, SetselectedChat } from "@/store/chat/chatsSlice";
 import { getSender } from "@/components/admin/chat/chatLogic";
+import { getProfileById } from "@/store/profile/profileActions";
 
 const NavLayout = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
+  const { user } = useSelector((state: RootState) => state.profile);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const { notifications } = useSelector((state: RootState) => state.chats);
   const { userId } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        await dispatch(getProfileById(auth.userId));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (auth.userId) {
+      fetchUserData();
+    }
+  }, [dispatch, auth.userId]);
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: `${user.firstName} ${user.lastName}`,
+        profilePic: user.profile?.avatar || profileImg,
+        profession: user.profession || "Instructor",
+      });
+    }
+  }, [user]);
+
+  const [profile, setProfile] = useState({
+    name: "",
+    profilePic: "",
+    profession: "",
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,11 +128,11 @@ const NavLayout = () => {
                     <DropdownMenuTrigger className="bg-green-100 text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <img
-                          src={profileImg}
+                          src={profile.profilePic}
                           alt="Profile"
                           className="w-8 h-8 rounded-full"
                         />
-                        <span>{auth.firstName}</span>
+                        <span>{profile.name}</span>
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
