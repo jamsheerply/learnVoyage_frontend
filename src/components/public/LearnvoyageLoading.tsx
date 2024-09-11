@@ -11,6 +11,10 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
 
   const services = [
     {
+      name: "Api Gateway",
+      url: import.meta.env.VITE_BASE_URL,
+    },
+    {
       name: "Auth Service",
       url: import.meta.env.VITE_AUTH_URL,
     },
