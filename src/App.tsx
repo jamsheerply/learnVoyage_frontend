@@ -60,6 +60,8 @@ import InstructorProfile from "./pages/public/instructor/InstructorProfile";
 import EditExam from "./pages/instructor/assessments/EditExam";
 import CourseDetailsA from "./pages/admin/course/CourseDetailsA";
 import AssessmentDetails from "./pages/admin/assessments/AssessmentDetails";
+import LearnVoyageLoading from "./components/public/LearnvoyageLoading";
+import { useState } from "react";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -157,10 +159,38 @@ const router = createBrowserRouter(
 );
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+  };
+
+  const handleError = (error) => {
+    setError(error.message);
+    setIsLoading(false);
+  };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-white">
+        <h1 className="text-4xl font-bold text-red-600 mb-4">Error</h1>
+        <p className="text-lg text-navy-900">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <SkeletonTheme baseColor="#202020" highlightColor="#444">
-        <RouterProvider router={router} />
+        {isLoading ? (
+          <LearnVoyageLoading
+            onLoadingComplete={handleLoadingComplete}
+            onError={handleError}
+          />
+        ) : (
+          <RouterProvider router={router} />
+        )}
         <Toaster />
       </SkeletonTheme>
     </>
