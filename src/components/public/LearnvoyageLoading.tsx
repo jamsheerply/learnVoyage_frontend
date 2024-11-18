@@ -47,7 +47,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
             (response) => !response.health
           );
 
-          if (failedServices.length > 0) {
+          if (failedServices?.length > 0) {
             const errorMessages = failedServices.map(
               (service) => `${service.name} is not responding or unhealthy`
             );
@@ -65,7 +65,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
             onError(new Error(errorMessages.join(", ")));
           } else {
             console.log("All API checks passed successfully!");
-            setApisChecked(services.length);
+            setApisChecked(services?.length);
             onLoadingComplete();
           }
         } catch (error) {
@@ -84,7 +84,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
       } else {
         // For non-production environments, immediately complete loading
         console.log("Skipping API checks for non-production environment");
-        setApisChecked(services.length);
+        setApisChecked(services?.length);
         onLoadingComplete();
       }
     };
