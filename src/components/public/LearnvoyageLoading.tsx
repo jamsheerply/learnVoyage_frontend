@@ -25,57 +25,67 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
 
   useEffect(() => {
     const checkApis = async () => {
-      try {
-        const responses = await Promise.all(
-          services.map((service) =>
-            axios
-              .get(`${service.url}/`)
-              .then((response) => ({
-                name: service.name,
-                health: response.data.health === true,
-              }))
-              .catch(() => ({
-                name: service.name,
-                health: false,
-              }))
-          )
-        );
-
-        const failedServices = responses.filter((response) => !response.health);
-
-        if (failedServices.length > 0) {
-          const errorMessages = failedServices.map(
-            (service) => `${service.name} is not responding or unhealthy`
+      // If in production Vercel environment, perform full API checks
+      if (import.meta.env.VITE_ENV === "PRODUCTION_VERCEL") {
+        try {
+          const responses = await Promise.all(
+            services.map((service) =>
+              axios
+                .get(`${service.url}/`)
+                .then((response) => ({
+                  name: service.name,
+                  health: response.data.health === true,
+                }))
+                .catch(() => ({
+                  name: service.name,
+                  health: false,
+                }))
+            )
           );
-          setError(errorMessages.join(", "));
-          errorMessages.forEach((message) => {
-            toast.error(message, {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
+
+          const failedServices = responses.filter(
+            (response) => !response.health
+          );
+
+          if (failedServices.length > 0) {
+            const errorMessages = failedServices.map(
+              (service) => `${service.name} is not responding or unhealthy`
+            );
+            setError(errorMessages.join(", "));
+            errorMessages.forEach((message) => {
+              toast.error(message, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
             });
+            onError(new Error(errorMessages.join(", ")));
+          } else {
+            console.log("All API checks passed successfully!");
+            setApisChecked(services.length);
+            onLoadingComplete();
+          }
+        } catch (error) {
+          console.error("Error checking APIs:", error);
+          setError("An unexpected error occurred while checking APIs");
+          toast.error("An unexpected error occurred while checking APIs", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           });
-          onError(new Error(errorMessages.join(", ")));
-        } else {
-          console.log("All API checks passed successfully!");
-          setApisChecked(services.length);
-          onLoadingComplete();
+          onError(error);
         }
-      } catch (error) {
-        console.error("Error checking APIs:", error);
-        setError("An unexpected error occurred while checking APIs");
-        toast.error("An unexpected error occurred while checking APIs", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-        onError(error);
+      } else {
+        // For non-production environments, immediately complete loading
+        console.log("Skipping API checks for non-production environment");
+        setApisChecked(services.length);
+        onLoadingComplete();
       }
     };
 
