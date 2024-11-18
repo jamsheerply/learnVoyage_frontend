@@ -93,7 +93,7 @@ const Home: React.FC = () => {
         <h2 className="font-extrabold text-lg sm:text-2xl mb-6">
           Top <span className="primary-text">Courses</span>
         </h2>
-        {topCourses.length > 0 && (
+        {topCourses?.length > 0 && (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {topCourses.slice(0, 3).map((course, index) => (
@@ -110,7 +110,7 @@ const Home: React.FC = () => {
                       {course.courseName}
                     </h3>
                     <div className="flex justify-between text-sm text-gray-500 mb-2">
-                      <span>Lesson: {course.lessons.length}</span>
+                      <span>Lesson: {course?.lessons?.length}</span>
                       <span>Student: {course.totalEnrollments}</span>
                       <span>{course.level || "Medium"}</span>
                     </div>
