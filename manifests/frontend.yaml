@@ -18,7 +18,7 @@ spec:
         - name: learn-voyage-frontend
           image: jamsheerply/learnvoyage-frontend:latest
           ports:
-            - containerPort: 5173
+            - containerPort: 4173
           envFrom:
             - configMapRef:
                 name: frontend-config
@@ -31,5 +31,5 @@ spec:
   selector:
     app: learn-voyage-frontend
   ports:
-    - port: 5173
-      targetPort: 5173
+    - port: 4173
+      targetPort: 4173
