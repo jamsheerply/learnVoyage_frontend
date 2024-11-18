@@ -45,3 +45,7 @@ vite.config.ts.timestamp-*
 
 # Misc
 *.pem
+
+node_modules
+.git
+dist
