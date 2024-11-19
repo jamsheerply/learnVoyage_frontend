@@ -5,8 +5,11 @@ interface UserData {
   [key: string]: string | number;
 }
 const baseURL = `https://jamsheerply.life/api/users/auth`;
-console.log(import.meta.env.VITE_BASE_URL + "   import.meta");
-
+console.log("start");
+for (const key in import.meta.env) {
+  console.log(key + ":", import.meta.env[key]); // This will log each key-value pair in import.meta.env
+}
+console.log("end");
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
   withCredentials: true,

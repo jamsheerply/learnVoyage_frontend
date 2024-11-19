@@ -49,3 +49,4 @@ vite.config.ts.timestamp-*
 node_modules
 .git
 dist
+.env
