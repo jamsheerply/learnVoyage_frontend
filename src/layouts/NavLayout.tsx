@@ -43,14 +43,14 @@ const NavLayout = () => {
     if (auth.userId) {
       fetchUserData();
     }
-  }, [dispatch, auth.userId]);
+  }, [dispatch, auth?.userId]);
 
   useEffect(() => {
     if (user) {
       setProfile({
-        name: `${user.firstName} ${user.lastName}`,
-        profilePic: user.profile?.avatar || profileImg,
-        profession: user.profession || "Instructor",
+        name: `${user?.firstName} ${user?.lastName}`,
+        profilePic: user?.profile?.avatar || profileImg,
+        profession: user?.profession || "Instructor",
       });
     }
   }, [user]);

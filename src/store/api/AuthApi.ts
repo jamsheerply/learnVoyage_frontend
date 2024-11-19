@@ -4,8 +4,8 @@ import axios, { AxiosInstance } from "axios";
 interface UserData {
   [key: string]: string | number;
 }
-const baseURL = `${import.meta.env.VITE_BASE_URL}/users/auth`;
-
+const baseURL = `https://jamsheerply.life/api/users/auth`;
+console.log(import.meta.env.VITE_BASE_URL + "   hello");
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
   withCredentials: true,
