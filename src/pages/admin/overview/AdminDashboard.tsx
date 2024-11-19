@@ -82,8 +82,8 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {metrics.length > 0 &&
-          metrics.map((metric) => (
+        {metrics?.length > 0 &&
+          metrics?.map((metric) => (
             <Card key={metric.name} className="p-4">
               <h3 className="text-sm font-medium text-green-600">
                 {metric.name}
@@ -98,7 +98,7 @@ const AdminDashboard: React.FC = () => {
           ))}
       </div>
 
-      {topCourses.length > 0 && (
+      {topCourses?.length > 0 && (
         <div>
           <div className="flex justify-between">
             <h2 className="text-xl font-semibold mb-4">Top Courses</h2>
@@ -110,7 +110,7 @@ const AdminDashboard: React.FC = () => {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {topCourses.slice(0, 3).map((course, index) => (
+            {topCourses?.slice(0, 3)?.map((course, index) => (
               <Card key={index} className="overflow-hidden">
                 <div className="h-40 bg-green-600 overflow-hidden">
                   <img
@@ -174,7 +174,7 @@ const AdminDashboard: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courseStatus.slice(0, 6).map((course, index) => (
+              {courseStatus?.slice(0, 6)?.map((course, index) => (
                 <TableRow key={index}>
                   <TableCell className="font-medium">
                     {course.courseName}
@@ -191,7 +191,7 @@ const AdminDashboard: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     ₹
-                    {course.totalRevenue.toLocaleString("en-IN", {
+                    {course?.totalRevenue.toLocaleString("en-IN", {
                       maximumFractionDigits: 2,
                       minimumFractionDigits: 2,
                     })}
@@ -206,7 +206,7 @@ const AdminDashboard: React.FC = () => {
       <div>
         <h2 className="text-xl font-semibold mb-4">Top Mentors</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {topMentors.map((mentor, index) => (
+          {topMentors?.map((mentor, index) => (
             <Card key={index} className="overflow-hidden">
               <img
                 src={getAvatarSrc(mentor.profile.avatar)}

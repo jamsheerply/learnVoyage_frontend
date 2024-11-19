@@ -6,6 +6,7 @@ interface UserData {
 }
 const baseURL = `https://jamsheerply.life/api/users/auth`;
 console.log(import.meta.env.VITE_BASE_URL + "   hello");
+
 export const api: AxiosInstance = axios.create({
   baseURL: baseURL,
   withCredentials: true,
