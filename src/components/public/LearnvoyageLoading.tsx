@@ -29,7 +29,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
       if (import.meta.env.VITE_ENV === "PRODUCTION_VERCEL") {
         try {
           const responses = await Promise.all(
-            services.map((service) =>
+            services?.map((service) =>
               axios
                 .get(`${service.url}/`)
                 .then((response) => ({
@@ -48,7 +48,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
           );
 
           if (failedServices?.length > 0) {
-            const errorMessages = failedServices.map(
+            const errorMessages = failedServices?.map(
               (service) => `${service.name} is not responding or unhealthy`
             );
             setError(errorMessages.join(", "));
@@ -123,7 +123,7 @@ const LearnVoyageLoading = ({ onLoadingComplete, onError }) => {
         variants={containerVariants}
         animate="animate"
       >
-        {[0, 1, 2, 3].map((index) => (
+        {[0, 1, 2, 3]?.map((index) => (
           <motion.div
             key={index}
             className="absolute w-4 h-4 bg-green-500 rounded-full"
