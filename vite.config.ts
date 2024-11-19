@@ -14,7 +14,7 @@ export default defineConfig({
     strictPort: true,
     port: 4173,
   },
-  build: {
-    minify: false,
-  },
+  // build: {
+  //   minify: false,
+  // },
 });
