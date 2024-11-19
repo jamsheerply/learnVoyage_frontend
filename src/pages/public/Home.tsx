@@ -96,7 +96,7 @@ const Home: React.FC = () => {
         {topCourses?.length > 0 && (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topCourses.slice(0, 3).map((course, index) => (
+              {topCourses.slice(0, 3)?.map((course, index) => (
                 <Card key={index} className="overflow-hidden">
                   <div className="h-40 bg-green-600 overflow-hidden">
                     <img
@@ -119,7 +119,7 @@ const Home: React.FC = () => {
                         Details
                       </button>
                       <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(5)]?.map((_, i) => (
                           <Star
                             key={i}
                             className={`w-4 h-4 ${
@@ -142,7 +142,7 @@ const Home: React.FC = () => {
         </h2>
         <div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {topMentors.map((mentor, index) => (
+            {topMentors?.map((mentor, index) => (
               <Card key={index} className="overflow-hidden">
                 <img
                   src={mentor.profile.avatar}
