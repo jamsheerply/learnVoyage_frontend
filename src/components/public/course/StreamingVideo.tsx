@@ -21,7 +21,7 @@
 
 //   useEffect(() => {
 //     setStreamUrl(
-//       `http://localhost:3000/api/content-management/videos/stream/${publicId}/${version}`
+//       `http://${import.meta.env.VITE_BASE_URL}/content-management/videos/stream/${publicId}/${version}`
 //     );
 //   }, [publicId, version]);
 
@@ -109,7 +109,9 @@ const StreamingVideo: React.FC<StreamingVideoProps> = ({
 
   useEffect(() => {
     setStreamUrl(
-      `http://localhost:3000/api/content-management/videos/stream/${publicId}/${version}`
+      `http://${
+        import.meta.env.VITE_BASE_URL
+      }/content-management/videos/stream/${publicId}/${version}`
     );
   }, [publicId, version]);
 

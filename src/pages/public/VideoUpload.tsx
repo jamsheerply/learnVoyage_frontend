@@ -54,7 +54,7 @@ const VideoUpload: React.FC = () => {
       const { public_id, version } = cloudinaryResponse.data;
 
       const response = await axios.post(
-        "http://localhost:3000/api/content-management/videos",
+        "http://${import.meta.env.VITE_BASE_URL}/content-management/videos",
         {
           title: file.name,
           publicId: public_id,

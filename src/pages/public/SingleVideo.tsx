@@ -20,7 +20,7 @@
 //     const fetchVideo = async () => {
 //       try {
 //         const response = await axios.get(
-//           `http://localhost:3000/api/content-management/videos/${id}`
+//           `http://${import.meta.env.VITE_BASE_URL}/content-management/videos/${id}`
 //         );
 //         setVideo(response.data);
 //       } catch (error) {
@@ -32,7 +32,7 @@
 
 //   useEffect(() => {
 //     if (video && videoRef.current) {
-//       const videoSrc = `http://localhost:3000/api/content-management/videos/stream/${id}`;
+//       const videoSrc = `http://${import.meta.env.VITE_BASE_URL}/content-management/videos/stream/${id}`;
 //       if (Hls.isSupported()) {
 //         const hls = new Hls({
 //           maxBufferSize: 0,
@@ -90,14 +90,16 @@ const SingleVideo: React.FC = () => {
       try {
         // console.log("Fetching video data...");
         // const response = await axios.get(
-        //   `http://localhost:3000/api/content-management/videos/${id}`
+        //   `http://${import.meta.env.VITE_BASE_URL}/content-management/videos/${id}`
         // );
         // console.log("Video data received:", response.data);
         // setVideo(response.data);
 
         // Set the stream URL to your backend endpoint
         setStreamUrl(
-          `http://localhost:3000/api/content-management/videos/stream/test/${id}`
+          `http://${
+            import.meta.env.VITE_BASE_URL
+          }/content-management/videos/stream/test/${id}`
         );
       } catch (error) {
         console.error("Error fetching video:", error);

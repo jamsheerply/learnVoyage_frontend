@@ -15,7 +15,7 @@ const VideoList: React.FC = () => {
     const fetchVideos = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/content-management/videos"
+          "http://${import.meta.env.VITE_BASE_URL}/content-management/videos"
         );
         setVideos(response.data);
       } catch (error) {
