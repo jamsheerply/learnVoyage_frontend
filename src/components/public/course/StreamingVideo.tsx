@@ -109,7 +109,7 @@ const StreamingVideo: React.FC<StreamingVideoProps> = ({
 
   useEffect(() => {
     setStreamUrl(
-      `http://${
+      `${
         import.meta.env.VITE_BASE_URL
       }/content-management/videos/stream/${publicId}/${version}`
     );
